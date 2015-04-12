@@ -1,8 +1,37 @@
 exports.ValueSchema = ValueSchema;
+exports.Any = Any;
 
-function ValueSchema( caster, options ) {
-  this.caster = caster;
+function Any( value ) {
+  return value;
+}
+
+/**
+ * @param {SchemaType|Function} type
+ * @param {Object} [options]
+ */
+function ValueSchema( type, options ) {
+  if ( !( this instanceof ValueSchema ) ) {
+    return new ValueSchema( type, options );
+  }
+
+  if ( typeof type === 'function' ) {
+    this.type = new SchemaType( type );
+  } else {
+    this.type = type;
+  }
+
   this.options = options || {};
+
+  this.validators = [];
+  this.validators.push( function( value ) {
+    if ( value === null || value === undefined ) {
+      if ( this.options.optional ) {
+        return true;
+      } else {
+        throw new ValidationError( 'Value cannot be null.' );
+      }
+    }
+  });
 }
 
 ValueSchema.prototype.cast = function( value ) {
@@ -14,15 +43,14 @@ ValueSchema.prototype.cast = function( value ) {
       return null;
     }
   }
-  return this.caster( value );
+  return this.type.cast( value );
 };
 
 ValueSchema.prototype.validate = function( value ) {
-  if ( value === null || value === undefined ) {
-    if ( this.options.optional ) {
+  for ( var i = 0, len = this.validators.length; i < len; i++ ) {
+    if ( this.validators[ i ].call( this, value ) === true ) {
       return;
-    } else {
-      throw new ValidationError( 'Value cannot be null.' );
     }
   }
+  this.type.validate( value );
 };

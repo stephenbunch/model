@@ -8,27 +8,34 @@ var pathy = isBrowser ? window.pathy : require( 'pathy' );
 var exports = ( function() {
 var exports = {};
 
+exports.Schema = function( node ) {
+  var parser = new SchemaParser( ObjectSchema, CollectionSchema, ValueSchema );
+  var _super = parser.isValueNode;
+  parser.isValueNode = function( node ) {
+    return _super.call( this, node ) || node instanceof ObjectSchema;
+  };
+  return parser.parse( node );
+};
+
 
 exports.CollectionSchema = CollectionSchema;
 
-function CollectionSchema( type, options ) {
+function CollectionSchema( type ) {
+  if ( !( this instanceof CollectionSchema ) ) {
+    return new CollectionSchema( type );
+  }
+
   this.type = type;
-  this.options = options || {};
 }
 
 CollectionSchema.prototype.cast = function( value ) {
   if ( value === undefined ) {
     value = null;
   }
-  if ( this.options.optional ) {
-    if ( value === null ) {
-      return null;
-    }
-  }
-  var self = this;
   if ( typeOf( value ) === 'array' ) {
+    var type = this.type;
     return value.map( function( item ) {
-      return self.type.cast( item );
+      return type.cast( item );
     });
   } else {
     return [];
@@ -36,47 +43,38 @@ CollectionSchema.prototype.cast = function( value ) {
 };
 
 CollectionSchema.prototype.validate = function( value ) {
-  if ( value === null || value === undefined ) {
-    if ( this.options.optional ) {
-      return;
-    } else {
-      throw new ValidationError( 'Value cannot be null.' );
-    }
-  }
   if ( typeOf( value ) !== 'array' ) {
     throw new ValidationError( 'Value must be an array.' );
   }
-  var self = this;
+  var type = this.type;
   value.forEach( function( item, index ) {
     try {
-      self.validate( item );
+      type.validate( item );
     } catch ( err ) {
       throw new ValidationError( 'The item at index ' + index + ' is invalid.', err );
     }
   });
 };
 
+exports.Model = Model;
 
-exports.Schema = Schema;
-
-function Schema( node, options ) {
-  if ( isCollectionNode( node ) ) {
-    return schemaFromCollectionNode( node );
-  }
-
-  this.paths = [];
-  this.options = options || {};
-  this.paths = pathsFromNode( '', node );
+function Model( schema, options ) {
+  
 }
 
-Schema.prototype.cast = function( value ) {
+exports.ObjectSchema = ObjectSchema;
+
+function ObjectSchema( paths ) {
+  if ( !( this instanceof ObjectSchema ) ) {
+    return new ObjectSchema( paths );
+  }
+
+  this.paths = paths;
+}
+
+ObjectSchema.prototype.cast = function( value ) {
   if ( value === undefined ) {
     value = null;
-  }
-  if ( this.options.optional ) {
-    if ( value === null ) {
-      return null;
-    }
   }
   return this.paths.reduce( function( object, path ) {
     path.set( object, path.type.cast( path.get( value ) ) );
@@ -84,17 +82,7 @@ Schema.prototype.cast = function( value ) {
   }, {} );
 };
 
-Schema.prototype.validate = function( value ) {
-  if ( value === null || value === undefined ) {
-    if ( this.options.optional ) {
-      return;
-    } else {
-      throw new ValidationError( 'Value cannot be null.' );
-    }
-  }
-  if ( typeOf( value ) !== 'object' ) {
-    throw new ValidationError( 'Value must be an object.' );
-  }
+ObjectSchema.prototype.validate = function( value ) {
   this.paths.forEach( function( path ) {
     try {
       path.type.validate( path.get( value ) );
@@ -104,46 +92,64 @@ Schema.prototype.validate = function( value ) {
   });
 };
 
+exports.SchemaParser = SchemaParser;
+
+function SchemaParser( objectFactory, collectionFactory, valueFactory ) {
+  this.objectFactory = objectFactory;
+  this.collectionFactory = collectionFactory;
+  this.valueFactory = valueFactory;
+}
+
+SchemaParser.prototype.parse = function( node ) {
+  if ( this.isCollectionNode( node ) ) {
+    return this.collectionSchemaFromNode( node );
+  } else {
+    return this.objectFactory( this.pathsFromNode( '', node ) );
+  }
+};
+
 /**
  * @param {String} base
  * @param {*} node
  * @returns {Array.<SchemaPath>}
  */
-function pathsFromNode( base, node ) {
+SchemaParser.prototype.pathsFromNode = function( base, node ) {
   if ( node === undefined ) {
     return [];
   }
-  if ( isCollectionNode( node ) ) {
-    return [ new SchemaPath( base, schemaFromCollectionNode( node ) ) ];
+  if ( this.isCollectionNode( node ) ) {
+    return [ new SchemaPath( base, this.collectionSchemaFromNode( node ) ) ];
   }
-  node = nodeFromValue( node );
-  if ( typeof node === 'function' ) {
-    return [ new SchemaPath( base, new ValueSchema( node ) ) ];
-  }
-  if ( typeof node.type === 'function' ) {
+  node = this.parseValue( node );
+  if ( this.isValueNode( node ) ) {
+    return [ new SchemaPath( base, this.valueFactory( node ) ) ];
+  } else if ( this.isValueNodeWithOptions( node ) ) {
     return [
       new SchemaPath(
         base,
-        new ValueSchema(
+        this.valueFactory(
           node.type,
-          optionsFromValueNode( node )
+          this.optionsFromNode( node )
         )
       )
     ];
   }
+  var self = this;
   return Object.keys( node ).map( function( key ) {
-    return pathsFromNode(
+    return self.pathsFromNode(
       base ? base + '.' + key : key,
       node[ key ]
     );
   }).reduce( function( paths, morePaths ) {
     return paths.concat( morePaths );
   }, [] );
-}
+};
 
-function nodeFromValue( value ) {
-  if ( value instanceof Schema || typeof value === 'function' ) {
+SchemaParser.prototype.parseValue = function( value ) {
+  if ( this.isValueNode( value ) ) {
     return value;
+  } else if ( value === null ) {
+    return Any;
   } else if ( typeof value === 'boolean' ) {
     return Boolean;
   } else if ( typeof value === 'string' ) {
@@ -152,73 +158,85 @@ function nodeFromValue( value ) {
     return Number;
   } else if ( typeOf( value ) === 'array' && value.length === 0 ) {
     return Array;
-  } else if ( value === null || Object.keys( value ).length === 0 ) {
+  } else if ( Object.keys( value ).length === 0 ) {
     return Object;
   } else {
     return value;
   }
-}
+};
 
-/**
- * @param {*} node
- * @returns {CollectionSchema}
- */
-function schemaFromCollectionNode( node ) {
+SchemaParser.prototype.collectionSchemaFromNode = function( node ) {
+  if ( this.isTypeNodeWithOptions( node ) ) {
+    return this.valueFactory(
+      this.collectionFactory( this.collectionTypeFromNode( node.type ) ),
+      this.optionsFromNode( node )
+    );
+  } else {
+    return this.valueFactory(
+      this.collectionFactory(
+        this.collectionTypeFromNode( node )
+      )
+    );
+  }
+};
+
+SchemaParser.prototype.collectionTypeFromNode = function( node ) {
   if ( typeOf( node ) === 'array' && node.length > 0 ) {
     node = node[0];
-    if ( typeof node === 'function' ) {
-      return new CollectionSchema( new ValueSchema( node ) );
-    } else if ( isValueNodeWithOptions( node ) ) {
-      return new CollectionSchema(
-        new ValueSchema(
-          node.type,
-          optionsFromValueNode( node[0] )
-        )
+    if ( this.isValueNode( node ) ) {
+      return this.valueFactory( node );
+    } else if ( this.isValueNodeWithOptions( node ) ) {
+      return this.valueFactory(
+        node.type,
+        this.optionsFromNode( node[0] )
       );
     } else {
-      return new CollectionSchema( new Schema( node ) );
+      return this.parse( node );
     }
   } else {
-    return new CollectionSchema( Object );
+    return this.valueFactory( Any );
   }
-}
+};
 
-/**
- * @param {*} node
- * @returns {Boolean}
- */
-function isCollectionNode( node ) {
+SchemaParser.prototype.isCollectionNode = function( node ) {
   return (
     node === Array ||
     typeOf( node ) === 'array' ||
-    isValueNodeWithOptions( node ) && (
+    this.isTypeNodeWithOptions( node ) && (
       node.type === Array ||
-      typeOf( node.type ) === 'Array'
+      typeOf( node.type ) === 'array'
     )
   );
-}
+};
 
-/**
- * @param {*} node
- * @returns {Boolean}
- */
-function isValueNodeWithOptions( node ) {
+SchemaParser.prototype.isValueNodeWithOptions = function( node ) {
   return (
     typeof node === 'object' &&
     node !== null &&
-    typeof node.type === 'function'
+    this.isValueNode( node.type )
   );
-}
+};
 
-/**
- * @param {Object} node
- * @returns {Object}
- */
-function optionsFromValueNode( node ) {
+SchemaParser.prototype.isValueNode = function( node ) {
+  return typeof node === 'function';
+};
+
+SchemaParser.prototype.isTypeNodeWithOptions = function( node ) {
+  return (
+    typeof node === 'object' &&
+    node !== null &&
+    (
+      this.isValueNode( node.type ) ||
+      typeOf( node.type ) === 'array'
+    )
+  );
+};
+
+SchemaParser.prototype.optionsFromNode = function( node ) {
   var options = cloneDeep( node );
   delete options.type;
   return options;
-}
+};
 
 exports.SchemaPath = SchemaPath;
 
@@ -236,6 +254,12 @@ SchemaPath.prototype.set = function( object, value ) {
   this.accessor.set( object, value );
 };
 
+function SchemaType( caster ) {
+  this.cast = caster;
+}
+
+SchemaType.prototype.validate = function() {};
+
 exports.ValidationError = ValidationError;
 
 function ValidationError( message, error ) {
@@ -248,10 +272,39 @@ ValidationError.prototype = Object.create( Error.prototype );
 ValidationError.prototype.constructor = ValidationError;
 
 exports.ValueSchema = ValueSchema;
+exports.Any = Any;
 
-function ValueSchema( caster, options ) {
-  this.caster = caster;
+function Any( value ) {
+  return value;
+}
+
+/**
+ * @param {SchemaType|Function} type
+ * @param {Object} [options]
+ */
+function ValueSchema( type, options ) {
+  if ( !( this instanceof ValueSchema ) ) {
+    return new ValueSchema( type, options );
+  }
+
+  if ( typeof type === 'function' ) {
+    this.type = new SchemaType( type );
+  } else {
+    this.type = type;
+  }
+
   this.options = options || {};
+
+  this.validators = [];
+  this.validators.push( function( value ) {
+    if ( value === null || value === undefined ) {
+      if ( this.options.optional ) {
+        return true;
+      } else {
+        throw new ValidationError( 'Value cannot be null.' );
+      }
+    }
+  });
 }
 
 ValueSchema.prototype.cast = function( value ) {
@@ -263,17 +316,16 @@ ValueSchema.prototype.cast = function( value ) {
       return null;
     }
   }
-  return this.caster( value );
+  return this.type.cast( value );
 };
 
 ValueSchema.prototype.validate = function( value ) {
-  if ( value === null || value === undefined ) {
-    if ( this.options.optional ) {
+  for ( var i = 0, len = this.validators.length; i < len; i++ ) {
+    if ( this.validators[ i ].call( this, value ) === true ) {
       return;
-    } else {
-      throw new ValidationError( 'Value cannot be null.' );
     }
   }
+  this.type.validate( value );
 };
 
 exports.View = View;
