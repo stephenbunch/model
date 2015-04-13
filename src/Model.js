@@ -17,6 +17,10 @@ Model.prototype.commit = function() {
   this.$view.commit();
 };
 
+Model.prototype.reset = function() {
+  this.$view.reset();
+};
+
 Model.prototype.toJSON = function() {
   return this.$view.toJSON();
 };

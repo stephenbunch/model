@@ -161,6 +161,10 @@ Model.prototype.commit = function() {
   this.$view.commit();
 };
 
+Model.prototype.reset = function() {
+  this.$view.reset();
+};
+
 Model.prototype.toJSON = function() {
   return this.$view.toJSON();
 };
@@ -730,8 +734,9 @@ function find( array, matcher ) {
 }
 
 function bind( func, context ) {
+  var args = Array.prototype.slice.call( arguments, 2 );
   return function() {
-    return func.apply( context, arguments );
+    return func.apply( context, args.concat( Array.prototype.slice.call( arguments ) ) );
   };
 }
 
