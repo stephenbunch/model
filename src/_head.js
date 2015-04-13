@@ -8,11 +8,8 @@ var pathy = isBrowser ? window.pathy : require( 'pathy' );
 var exports = ( function() {
 var exports = {};
 
+var basicSchemaParser = new SchemaParser();
+
 exports.Schema = function( node ) {
-  var parser = new SchemaParser( ObjectSchema, CollectionSchema, ValueSchema );
-  var _super = parser.isValueNode;
-  parser.isValueNode = function( node ) {
-    return _super.call( this, node ) || node instanceof ObjectSchema;
-  };
-  return parser.parse( node );
+  return basicSchemaParser.parse( node );
 };

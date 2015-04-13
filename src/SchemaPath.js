@@ -1,6 +1,10 @@
 exports.SchemaPath = SchemaPath;
 
 function SchemaPath( path, type ) {
+  if ( !( this instanceof SchemaPath ) ) {
+    return new SchemaPath( path, type );
+  }
+
   this.name = path;
   this.type = type;
   this.accessor = pathy( path );
