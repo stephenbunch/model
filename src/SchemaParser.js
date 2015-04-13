@@ -1,20 +1,19 @@
 exports.SchemaParser = SchemaParser;
 
-function SchemaParser( options ) {
+function SchemaParser() {
   if ( !( this instanceof SchemaParser ) ) {
-    return new SchemaParser( options );
+    return new SchemaParser();
   }
 
-  options = options || {};
-  this.objectFactory = options.objectFactory || ObjectSchema;
-  this.collectionFactory = options.collectionFactory || CollectionSchema;
-  this.valueFactory = options.valueFactory || ValueSchema;
-  this.pathFactory = options.pathFactory || SchemaPath;
-  this.typeMatchers = options.typeMatchers || [
-    function( node ) {
-      return node instanceof ObjectSchema;
-    }
-  ];
+  this.objectFactory = ObjectSchema;
+  this.collectionFactory = CollectionSchema;
+  this.valueFactory = ValueSchema;
+  this.pathFactory = SchemaPath;
+
+  this.typeMatchers = [];
+  this.typeMatchers.push( function( node ) {
+    return node instanceof ObjectSchema;
+  });
 }
 
 SchemaParser.prototype.parse = function( node ) {

@@ -107,3 +107,28 @@ function typeOf( value ) {
   return Object.prototype.toString.call( value )
     .match( /^\[object\s(.*)\]$/ )[1].toLowerCase();
 }
+
+function findIndex( array, matcher ) {
+  for ( var i = 0, len = array.length; i < len; i++ ) {
+    if ( matcher( array[ i ] ) ) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function find( array, matcher ) {
+  var index = findIndex( array, matcher );
+  if ( index > -1 ) {
+    return array[ index ];
+  } else {
+    return null;
+  }
+}
+
+function bind( func, context ) {
+  var args = Array.prototype.slice.call( arguments, 2 );
+  return function() {
+    return func.apply( context, args.concat( Array.prototype.slice.call( arguments ) ) );
+  };
+}
