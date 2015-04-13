@@ -29,6 +29,10 @@ View.prototype.merge = function( object ) {
   merge( this._local.value, object );
 };
 
+View.prototype.replace = function( object ) {
+  this._local.value = object || {};
+};
+
 View.prototype.commit = function() {
   if ( !this.view ) {
     throw new Error( 'No subview to commit to!' );
