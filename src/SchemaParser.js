@@ -33,6 +33,7 @@ SchemaParser.prototype.pathsFromNode = function( base, node ) {
   if ( node === undefined ) {
     return [];
   }
+  node = this.valueFromLiteral( node );
   if ( this.isValueNode( node ) ) {
     return [ this.pathFactory( base, this.valueFromNode( node ) ) ];
   }
@@ -45,6 +46,13 @@ SchemaParser.prototype.pathsFromNode = function( base, node ) {
   }).reduce( function( paths, morePaths ) {
     return paths.concat( morePaths );
   }, [] );
+};
+
+SchemaParser.prototype.valueFromLiteral = function( node ) {
+  if ( node === null ) {
+    return Any;
+  }
+  return node;
 };
 
 SchemaParser.prototype.isTypeNode = function( node ) {

@@ -381,6 +381,7 @@ SchemaParser.prototype.pathsFromNode = function( base, node ) {
   if ( node === undefined ) {
     return [];
   }
+  node = this.valueFromLiteral( node );
   if ( this.isValueNode( node ) ) {
     return [ this.pathFactory( base, this.valueFromNode( node ) ) ];
   }
@@ -393,6 +394,13 @@ SchemaParser.prototype.pathsFromNode = function( base, node ) {
   }).reduce( function( paths, morePaths ) {
     return paths.concat( morePaths );
   }, [] );
+};
+
+SchemaParser.prototype.valueFromLiteral = function( node ) {
+  if ( node === null ) {
+    return Any;
+  }
+  return node;
 };
 
 SchemaParser.prototype.isTypeNode = function( node ) {
@@ -507,13 +515,16 @@ function ValueSchema( type, options ) {
     return new ValueSchema( type, options );
   }
 
+  this.options = options || {};
+
   if ( typeof type === 'function' ) {
+    if ( type === Any ) {
+      this.options.optional = true;
+    }
     this.type = new SchemaType( type );
   } else {
     this.type = type;
   }
-
-  this.options = options || {};
 
   this.validators = [];
   this.validators.push( function( value ) {

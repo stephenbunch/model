@@ -120,3 +120,19 @@ describe( 'type.cast( value )', function() {
     });
   });
 });
+
+describe( 'model.Any', function() {
+  it( 'should not cast the value', function() {
+    var Foo = model.Type({
+      bar: null
+    });
+    var foo = Foo.cast({});
+    expect( foo.bar ).to.be.null;
+    foo.bar = 2;
+    expect( foo.bar ).to.equal( 2 );
+    foo.bar = '2';
+    expect( foo.bar ).to.equal( '2' );
+    foo.bar = null;
+    expect( foo.bar ).to.be.null;
+  });
+});

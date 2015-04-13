@@ -14,13 +14,16 @@ function ValueSchema( type, options ) {
     return new ValueSchema( type, options );
   }
 
+  this.options = options || {};
+
   if ( typeof type === 'function' ) {
+    if ( type === Any ) {
+      this.options.optional = true;
+    }
     this.type = new SchemaType( type );
   } else {
     this.type = type;
   }
-
-  this.options = options || {};
 
   this.validators = [];
   this.validators.push( function( value ) {
