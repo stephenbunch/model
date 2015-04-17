@@ -1,9 +1,4 @@
-exports.util = {
-  cloneDeep: cloneDeep,
-  merge: merge
-};
-
-function cloneDeep( object ) {
+export function cloneDeep( object ) {
 
   function cloneValue( value ) {
     if ( typeof value === 'object' && value !== null ) {
@@ -42,7 +37,7 @@ function cloneDeep( object ) {
  * @param {...Object} other The source objects.
  * @returns {Object} Returns object.
  */
-function merge( object, other ) {
+export function merge( object, other ) {
   if ( !object || typeof object !== 'object' ) {
     return object;
   }
@@ -103,12 +98,12 @@ function merge( object, other ) {
  * @param {*} value
  * @returns {String}
  */
-function typeOf( value ) {
+export function typeOf( value ) {
   return Object.prototype.toString.call( value )
     .match( /^\[object\s(.*)\]$/ )[1].toLowerCase();
 }
 
-function findIndex( array, matcher ) {
+export function findIndex( array, matcher ) {
   for ( var i = 0, len = array.length; i < len; i++ ) {
     if ( matcher( array[ i ] ) ) {
       return i;
@@ -117,7 +112,7 @@ function findIndex( array, matcher ) {
   return -1;
 }
 
-function find( array, matcher ) {
+export function find( array, matcher ) {
   var index = findIndex( array, matcher );
   if ( index > -1 ) {
     return array[ index ];
@@ -126,7 +121,7 @@ function find( array, matcher ) {
   }
 }
 
-function bind( func, context ) {
+export function bind( func, context ) {
   var args = Array.prototype.slice.call( arguments, 2 );
   return function() {
     return func.apply( context, args.concat( Array.prototype.slice.call( arguments ) ) );

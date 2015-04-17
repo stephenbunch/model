@@ -1,6 +1,10 @@
-exports.SchemaParser = SchemaParser;
+import ObjectSchema from './ObjectSchema';
+import CollectionSchema from './CollectionSchema';
+import ValueSchema, { Any } from './ValueSchema';
+import SchemaPath from './SchemaPath';
+import { cloneDeep, typeOf } from './util';
 
-function SchemaParser() {
+export default function SchemaParser() {
   if ( !( this instanceof SchemaParser ) ) {
     return new SchemaParser();
   }

@@ -1,7 +1,7 @@
-exports.ValueSchema = ValueSchema;
-exports.Any = Any;
+import SchemaType from './SchemaType';
+import ValidationError from './ValidationError';
 
-function Any( value ) {
+export function Any( value ) {
   return value;
 }
 
@@ -9,7 +9,7 @@ function Any( value ) {
  * @param {SchemaType|Function} type
  * @param {Object} [options]
  */
-function ValueSchema( type, options ) {
+export default function ValueSchema( type, options ) {
   if ( !( this instanceof ValueSchema ) ) {
     return new ValueSchema( type, options );
   }

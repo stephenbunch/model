@@ -1,6 +1,11 @@
-exports.ModelSchema = ModelSchema;
+import { cloneDeep } from './util';
+import Model from './Model';
+import View from './View';
+import CollectionSchema from './CollectionSchema';
+import Collection from './Collection';
+import pathy from 'pathy';
 
-function ModelSchema( paths, options ) {
+export default function ModelSchema( paths, options ) {
   this.paths = paths;
   this.options = options || {};
 

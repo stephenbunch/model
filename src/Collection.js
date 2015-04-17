@@ -1,11 +1,11 @@
-exports.Collection = Collection;
+import { bind, findIndex } from './util';
 
 /**
  * @param {Model} view
  * @param {String} key
  * @param {ModelSchema} schema
  */
-function Collection( parent, key, schema ) {
+export default function Collection( parent, key, schema ) {
   this.$parent = parent;
   this.$key = key;
   this.$schema = schema;

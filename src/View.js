@@ -1,6 +1,7 @@
-exports.View = View;
+import pathy from 'pathy';
+import { merge, cloneDeep } from './util';
 
-function View( view ) {
+export default function View( view ) {
   this.view = view;
   this._local = {};
   this.reset();

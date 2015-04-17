@@ -1,6 +1,4 @@
-exports.ValidationError = ValidationError;
-
-function ValidationError( message, error ) {
+export default function ValidationError( message, error ) {
   this.name = 'ValidationError';
   this.message = message;
   this.error = error || null;

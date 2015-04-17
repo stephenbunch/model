@@ -1,6 +1,7 @@
-exports.CollectionSchema = CollectionSchema;
+import { typeOf } from './util';
+import ValidationError from './ValidationError';
 
-function CollectionSchema( type ) {
+export default function CollectionSchema( type ) {
   if ( !( this instanceof CollectionSchema ) ) {
     return new CollectionSchema( type );
   }

@@ -1,6 +1,6 @@
-exports.ObjectSchema = ObjectSchema;
+import ValidationError from './ValidationError';
 
-function ObjectSchema( paths ) {
+export default function ObjectSchema( paths ) {
   if ( !( this instanceof ObjectSchema ) ) {
     return new ObjectSchema( paths );
   }

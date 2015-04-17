@@ -1,6 +1,6 @@
-exports.SchemaPath = SchemaPath;
+import pathy from 'pathy';
 
-function SchemaPath( path, type ) {
+export default function SchemaPath( path, type ) {
   if ( !( this instanceof SchemaPath ) ) {
     return new SchemaPath( path, type );
   }

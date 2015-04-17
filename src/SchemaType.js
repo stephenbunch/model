@@ -1,4 +1,4 @@
-function SchemaType( caster ) {
+export default function SchemaType( caster ) {
   this.cast = caster;
 }
 

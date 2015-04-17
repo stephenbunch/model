@@ -1,10 +1,8 @@
-exports.Model = Model;
-
 /**
  * @param {ModelSchema} schema
  * @param {View} view
  */
-function Model( schema, view ) {
+export default function Model( schema, view ) {
   this.$schema = schema;
   this.$view = view;
 }
