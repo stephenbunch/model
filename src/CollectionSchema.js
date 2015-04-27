@@ -6,14 +6,14 @@ export default class CollectionSchema {
     this.type = type;
   }
 
-  cast( value ) {
+  cast( value, options ) {
     if ( value === undefined ) {
       value = null;
     }
     if ( typeOf( value ) === 'array' ) {
       var type = this.type;
       return value.map( function( item ) {
-        return type.cast( item );
+        return type.cast( item, options );
       });
     } else {
       return [];

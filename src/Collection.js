@@ -2,7 +2,7 @@ import { bind, findIndex } from './util';
 
 export default class Collection extends Array {
   /**
-   * @param {Model} view
+   * @param {Model} parent
    * @param {String} key
    * @param {ModelSchema} schema
    */
@@ -19,7 +19,7 @@ export default class Collection extends Array {
   add( item ) {
     if ( this.indexOf( item ) === -1 ) {
       this.remove( item );
-      item = this.$schema.cast( item );
+      item = this._cast( item );
       this.push( item );
       this._apply();
     }
@@ -40,7 +40,7 @@ export default class Collection extends Array {
   }
 
   new( defaults ) {
-    return this.$schema.new( defaults );
+    return this._cast( defaults );
   }
 
   addNew( defaults ) {
@@ -63,7 +63,7 @@ export default class Collection extends Array {
     if ( !this._updating ) {
       this.length = 0;
       ( this.$parent.$view.get( this.$key ) || [] ).forEach( function( item ) {
-        self.push( self.$schema.cast( item ) );
+        self.push( self._cast( item ) );
       });
     }
   }
@@ -77,5 +77,12 @@ export default class Collection extends Array {
       })
     );
     this._updating = false;
+  }
+
+  _cast( value ) {
+    return this.$schema.cast( value, {
+      parent: this.$parent,
+      parentCollection: this
+    });
   }
 }

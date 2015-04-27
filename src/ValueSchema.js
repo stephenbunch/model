@@ -6,6 +6,26 @@ export function Any( value ) {
 }
 
 export default class ValueSchema {
+  static defaultFactory( type, options ) {
+    options = options || {};
+    if ( type === Any ) {
+      options.optional = true;
+    } else if ( type === Number ) {
+      type = function( value ) {
+        value = Number( value );
+        if ( isNaN( value ) ) {
+          return 0;
+        }
+        return value;
+      };
+    } else if ( type === String ) {
+      type = function( value ) {
+        return String( value || '' );
+      };
+    }
+    return new ValueSchema( type, options );
+  }
+
   /**
    * @param {SchemaType|Function} type
    * @param {Object} [options]
@@ -14,9 +34,6 @@ export default class ValueSchema {
     this.options = options || {};
 
     if ( typeof type === 'function' ) {
-      if ( type === Any ) {
-        this.options.optional = true;
-      }
       this.type = new SchemaType( type );
     } else {
       this.type = type;
@@ -34,7 +51,7 @@ export default class ValueSchema {
     });
   }
 
-  cast( value ) {
+  cast( value, options ) {
     if ( value === undefined ) {
       value = null;
     }
@@ -43,7 +60,7 @@ export default class ValueSchema {
         return null;
       }
     }
-    return this.type.cast( value );
+    return this.type.cast( value, options );
   }
 
   validate( value ) {

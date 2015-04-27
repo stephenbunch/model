@@ -2,10 +2,15 @@ export default class Model {
   /**
    * @param {ModelSchema} schema
    * @param {View} view
+   * @param {Object} [options]
    */
-  constructor( schema, view ) {
+  constructor( schema, view, options ) {
     this.$schema = schema;
     this.$view = view;
+
+    options = options || {};
+    this.$parent = options.parent;
+    this.$parentCollection = options.parentCollection;
   }
 
   edit() {

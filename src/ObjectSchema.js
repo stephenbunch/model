@@ -5,12 +5,12 @@ export default class ObjectSchema {
     this.paths = paths;
   }
 
-  cast( value ) {
+  cast( value, options ) {
     if ( value === undefined ) {
       value = null;
     }
     return this.paths.reduce( function( object, path ) {
-      path.set( object, path.type.cast( path.get( value ) ) );
+      path.set( object, path.type.cast( path.get( value ), options ) );
       return object;
     }, {} );
   }

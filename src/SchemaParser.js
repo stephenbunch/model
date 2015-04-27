@@ -8,7 +8,7 @@ export default class SchemaParser {
   constructor() {
     this.objectFactory = makeFactory( ObjectSchema );
     this.collectionFactory = makeFactory( CollectionSchema );
-    this.valueFactory = makeFactory( ValueSchema );
+    this.valueFactory = ValueSchema.defaultFactory;
     this.pathFactory = makeFactory( SchemaPath );
 
     this.typeMatchers = [];

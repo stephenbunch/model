@@ -20,12 +20,12 @@ export default class ModelSchema {
   }
 
   new( defaults ) {
-    return this.cast( cloneDeep( defaults || {} ) );
+    return this.cast( defaults );
   }
 
-  cast( value ) {
+  cast( value, options ) {
     if ( value === undefined || value === null ) {
-      return null;
+      value = {};
     }
     var view;
     if ( value instanceof Model ) {
@@ -38,11 +38,13 @@ export default class ModelSchema {
     } else {
       if ( value.toJSON ) {
         value = value.toJSON();
+      } else {
+        value = cloneDeep( value );
       }
       view = new View();
       view.merge( value );
     }
-    var model = new Model( this, view );
+    var model = new Model( this, view, options );
     this.addPaths( model );
     this.addMembers( model );
     if ( this.initializer ) {
@@ -89,10 +91,17 @@ export default class ModelSchema {
     pathy( path.name ).override( model, {
       initialize: false,
       get: function() {
-        return path.type.cast( model.$view.get( path.name ) );
+        return path.type.cast( model.$view.get( path.name ), {
+          parent: model
+        });
       },
       set: function( value ) {
-        model.$view.set( path.name, path.type.cast( value ) );
+        model.$view.set(
+          path.name,
+          path.type.cast( value, {
+            parent: model
+          })
+        );
       }
     });
   }

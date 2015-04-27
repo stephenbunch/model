@@ -94,4 +94,40 @@ describe( 'model.Schema', function() {
       expect( edit.trees[1].id ).to.equal( 2 );
     });
   });
+
+  describe( '.$parent', function() {
+    it( 'should return the parent model', function() {
+      var Foo = model.Schema({
+        name: String
+      });
+      var Bar = model.Schema({
+        id: String,
+        foo: Foo
+      });
+      var bar = Bar.new();
+      expect( bar.foo.$parent ).to.equal( bar );
+    });
+
+    it( 'should return the parent of the parent collection', function() {
+      var Foo = model.Schema();
+      var Bar = model.Schema({
+        foos: [ Foo ]
+      });
+      var bar = Bar.new();
+      bar.foos.addNew();
+      expect( bar.foos[0].$parent ).to.equal( bar );
+    });
+  });
+
+  describe( '.$parentCollection', function() {
+    it( 'should return the parent collection', function() {
+      var Foo = model.Schema();
+      var Bar = model.Schema({
+        foos: [ Foo ]
+      });
+      var bar = Bar.new();
+      bar.foos.addNew();
+      expect( bar.foos[0].$parentCollection ).to.equal( bar.foos );
+    });
+  });
 });

@@ -13,9 +13,9 @@ describe( 'model.SchemaParser', function() {
       });
       expect( schema.paths.length ).to.equal( 2 );
       expect( schema.paths[0].name ).to.equal( 'foo' );
-      expect( schema.paths[0].type.type.cast ).to.equal( Number );
+      expect( schema.paths[0].type.type.cast ).to.be.a( 'function' );
       expect( schema.paths[1].name ).to.equal( 'bar' );
-      expect( schema.paths[1].type.type.cast ).to.equal( String );
+      expect( schema.paths[1].type.type.cast ).to.be.a( 'function' );
     });
 
     it( 'should parse empty arrays as collections of objects', function() {
@@ -33,9 +33,9 @@ describe( 'model.SchemaParser', function() {
       });
       expect( schema.paths.length ).to.equal( 2 );
       expect( schema.paths[0].name ).to.equal( 'foo.bar' );
-      expect( schema.paths[0].type.type.cast ).to.equal( Number );
+      expect( schema.paths[0].type.type.cast ).to.be.a( 'function' );
       expect( schema.paths[1].name ).to.equal( 'foo.baz' );
-      expect( schema.paths[1].type.type.cast ).to.equal( String );
+      expect( schema.paths[1].type.type.cast ).to.be.a( 'function' );
     });
 
     it( 'should parse nested arrays as collections of collections', function() {
@@ -47,7 +47,13 @@ describe( 'model.SchemaParser', function() {
       expect( foo.name ).to.equal( 'foo' );
       expect( foo.type.type ).to.be.instanceof( model.CollectionSchema );
       expect( foo.type.type.type.type ).to.be.instanceof( model.CollectionSchema );
-      expect( foo.type.type.type.type.type.type.cast ).to.equal( Number );
+      expect( foo.type.type.type.type.type.type.cast ).to.be.a( 'function' );
+    });
+
+    it( 'should parse null or undefined as an object', function() {
+      var schema = parser.schemaFromNode();
+      expect( schema.paths.length ).to.equal( 0 );
+      expect( schema.cast() ).to.eql( {} );
     });
   });
 
@@ -139,6 +145,26 @@ describe( 'model.SchemaParser', function() {
       expect( foo.bar ).to.equal( '2' );
       foo.bar = null;
       expect( foo.bar ).to.be.null;
+    });
+
+    it( 'should cast falsey types to empty strings', function() {
+      var Foo = parser.schemaFromNode({
+        bar: String,
+        baz: String,
+        qux: String
+      });
+      [ 0, null, false, undefined ].forEach( function( falsey ) {
+        var foo = Foo.cast({ bar: falsey });
+        expect( foo.bar ).to.equal( '' );
+      });
+    });
+
+    it( 'should cast to 0 instead of NaN', function() {
+      var Foo = parser.schemaFromNode({
+        bar: Number
+      });
+      var foo = Foo.cast({ bar: 'hello' });
+      expect( foo.bar ).to.equal( 0 );
     });
   });
 });
