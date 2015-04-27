@@ -1,5 +1,7 @@
-export default function SchemaType( caster ) {
-  this.cast = caster;
-}
+export default class SchemaType {
+  constructor( caster ) {
+    this.cast = caster;
+  }
 
-SchemaType.prototype.validate = function() {};
+  validate() {}
+}

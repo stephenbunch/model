@@ -127,3 +127,11 @@ export function bind( func, context ) {
     return func.apply( context, args.concat( Array.prototype.slice.call( arguments ) ) );
   };
 }
+
+export function makeFactory( Class ) {
+  return function() {
+    var instance = Object.create( Class.prototype );
+    Class.prototype.constructor.apply( instance, arguments );
+    return instance;
+  };
+}

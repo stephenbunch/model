@@ -1,19 +1,17 @@
 import pathy from 'pathy';
 
-export default function SchemaPath( path, type ) {
-  if ( !( this instanceof SchemaPath ) ) {
-    return new SchemaPath( path, type );
+export default class SchemaPath {
+  constructor( path, type ) {
+    this.name = path;
+    this.type = type;
+    this.accessor = pathy( path );
   }
 
-  this.name = path;
-  this.type = type;
-  this.accessor = pathy( path );
+  get( object ) {
+    return this.accessor.get( object );
+  }
+
+  set( object, value ) {
+    this.accessor.set( object, value );
+  }
 }
-
-SchemaPath.prototype.get = function( object ) {
-  return this.accessor.get( object );
-};
-
-SchemaPath.prototype.set = function( object, value ) {
-  this.accessor.set( object, value );
-};

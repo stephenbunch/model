@@ -1,8 +1,7 @@
-export default function ValidationError( message, error ) {
-  this.name = 'ValidationError';
-  this.message = message;
-  this.error = error || null;
+export default class ValidationError extends Error {
+  constructor( message, error ) {
+    super( message );
+    this.name = 'ValidationError';
+    this.error = error || null;
+  }
 }
-
-ValidationError.prototype = Object.create( Error.prototype );
-ValidationError.prototype.constructor = ValidationError;
