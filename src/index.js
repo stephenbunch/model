@@ -1,18 +1,13 @@
 import SchemaParser from './SchemaParser';
 import ModelSchema from './ModelSchema';
 
-var basicSchemaParser = new SchemaParser();
 var modelSchemaParser = new SchemaParser();
 modelSchemaParser.typeMatchers.push( function( node ) {
   return node instanceof ModelSchema;
 });
 
-export function Type( node ) {
-  return basicSchemaParser.parse( node );
-}
-
 export function Schema( node, options ) {
-  return new ModelSchema( modelSchemaParser.parse( node ).paths, options );
+  return new ModelSchema( modelSchemaParser.schemaFromNode( node ).paths, options );
 }
 
 export { default as Collection } from './Collection';

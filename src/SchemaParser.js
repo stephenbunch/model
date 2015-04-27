@@ -17,7 +17,7 @@ export default class SchemaParser {
     });
   }
 
-  parse( node ) {
+  schemaFromNode( node ) {
     if ( this.isValueNode( node ) ) {
       return this.valueFromNode( node );
     } else {
