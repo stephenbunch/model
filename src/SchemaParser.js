@@ -2,14 +2,14 @@ import ObjectSchema from './ObjectSchema';
 import CollectionSchema from './CollectionSchema';
 import ValueSchema, { Any } from './ValueSchema';
 import SchemaPath from './SchemaPath';
-import { cloneDeep, typeOf, makeFactory } from './util';
+import { cloneDeep, typeOf, factoryFromClass } from './util';
 
 export default class SchemaParser {
   constructor() {
-    this.objectFactory = makeFactory( ObjectSchema );
-    this.collectionFactory = makeFactory( CollectionSchema );
+    this.objectFactory = factoryFromClass( ObjectSchema );
+    this.collectionFactory = factoryFromClass( CollectionSchema );
     this.valueFactory = ValueSchema.defaultFactory;
-    this.pathFactory = makeFactory( SchemaPath );
+    this.pathFactory = factoryFromClass( SchemaPath );
 
     this.typeMatchers = [];
     this.typeMatchers.push( function( node ) {

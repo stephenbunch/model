@@ -103,6 +103,12 @@ export function typeOf( value ) {
     .match( /^\[object\s(.*)\]$/ )[1].toLowerCase();
 }
 
+/**
+ * Gets the index of the first match or -1 if no matches are found.
+ * @param {Array} array
+ * @param {Function} matcher A matching function that returns true or false.
+ * @returns {Number}
+ */
 export function findIndex( array, matcher ) {
   for ( var i = 0, len = array.length; i < len; i++ ) {
     if ( matcher( array[ i ] ) ) {
@@ -112,6 +118,12 @@ export function findIndex( array, matcher ) {
   return -1;
 }
 
+/**
+ * Returns the first match or null of no matches are found.
+ * @param {Array} array
+ * @param {Function} matcher
+ * @returns {*|null}
+ */
 export function find( array, matcher ) {
   var index = findIndex( array, matcher );
   if ( index > -1 ) {
@@ -121,17 +133,31 @@ export function find( array, matcher ) {
   }
 }
 
-export function bind( func, context ) {
-  var args = Array.prototype.slice.call( arguments, 2 );
-  return function() {
-    return func.apply( context, args.concat( Array.prototype.slice.call( arguments ) ) );
-  };
-}
-
-export function makeFactory( Class ) {
+/**
+ * Creates a factory function that returns a new instance of the specified
+ * class.
+ * @param {Function} Class
+ * @returns {Function}
+ */
+export function factoryFromClass( Class ) {
   return function() {
     var instance = Object.create( Class.prototype );
     Class.prototype.constructor.apply( instance, arguments );
     return instance;
   };
+}
+
+/**
+ * @param {Function} child The child class.
+ * @param {Function} parent The parent class.
+ * @returns {Function} The child class.
+ */
+export function inherits( child, parent ) {
+  var proto = child.prototype;
+  child.prototype = Object.create( parent.prototype );
+  var parentProps = Object.getOwnPropertyNames( parent.prototype );
+  Object.getOwnPropertyNames( proto ).forEach( function( prop ) {
+    Object.defineProperty( child.prototype, prop, Object.getOwnPropertyDescriptor( proto, prop ) );
+  });
+  return child;
 }

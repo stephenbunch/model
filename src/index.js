@@ -6,8 +6,8 @@ modelSchemaParser.typeMatchers.push( function( node ) {
   return node instanceof ModelSchema;
 });
 
-export function Schema( node, options ) {
-  return new ModelSchema( modelSchemaParser.schemaFromNode( node ).paths, options );
+export function Schema( node, ModelClass ) {
+  return new ModelSchema( modelSchemaParser.schemaFromNode( node ).paths, ModelClass );
 }
 
 export { default as Collection } from './Collection';

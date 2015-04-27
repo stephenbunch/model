@@ -1,4 +1,4 @@
-describe( 'model.SchemaParser', function() {
+describe( 'SchemaParser', function() {
 
   var parser;
   beforeEach( function() {

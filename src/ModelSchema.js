@@ -1,4 +1,4 @@
-import { cloneDeep } from './util';
+import { cloneDeep, factoryFromClass, inherits } from './util';
 import Model from './Model';
 import View from './View';
 import CollectionSchema from './CollectionSchema';
@@ -6,17 +6,17 @@ import Collection from './Collection';
 import pathy from 'pathy';
 
 export default class ModelSchema {
-  constructor( paths, options ) {
+  /**
+   * @param {Array.<SchemaPath>} paths
+   * @param {Function} [ModelClass]
+   */
+  constructor( paths, ModelClass ) {
     this.paths = paths;
-    this.options = options || {};
-
-    this.members = this.options.members || {};
-    delete this.options.members;
-
-    if ( this.members.init ) {
-      this.initializer = this.members.init;
-      delete this.members.init;
-    }
+    this.modelFactory = factoryFromClass(
+      ModelClass && inherits( ModelClass, Model ) ||
+      Model
+    );
+    this.collectionFactory = Collection;
   }
 
   new( defaults ) {
@@ -28,11 +28,8 @@ export default class ModelSchema {
       value = {};
     }
     var view;
-    if ( value instanceof Model ) {
-      if ( value.$schema === this ) {
-        return value;
-      }
-      view = value.$view;
+    if ( value.$schema === this ) {
+      return value;
     } else if ( value instanceof View ) {
       view = value;
     } else {
@@ -44,12 +41,9 @@ export default class ModelSchema {
       view = new View();
       view.merge( value );
     }
-    var model = new Model( this, view, options );
+    var model = this.modelFactory( this, view, options );
     this.addPaths( model );
-    this.addMembers( model );
-    if ( this.initializer ) {
-      this.initializer.call( model );
-    }
+    model.init();
     return model;
   }
 
@@ -75,7 +69,7 @@ export default class ModelSchema {
    * @param {SchemaPath} path
    */
   addCollectionPath( model, path ) {
-    var collection = new Collection( model, path.name, path.type.type.type.type );
+    var collection = this.collectionFactory( model, path.name, path.type.type.type.type );
     pathy( path.name ).override( model, {
       get: function() {
         return collection;
@@ -104,55 +98,5 @@ export default class ModelSchema {
         );
       }
     });
-  }
-
-  /**
-   * @param {Model} model
-   */
-  addMembers( model ) {
-    var self = this;
-    Object.keys( this.members ).forEach( function( key ) {
-      var member = self.members[ key ];
-      var descriptor = {};
-
-      if ( typeof member === 'function' ) {
-        self.addFunctionMember( model, member, key );
-      } else if ( !!member && typeof member === 'object' ) {
-        self.addPropertyMember( model, member, key );
-      }
-    });
-  }
-
-  /**
-   * @param {Model} model
-   * @param {Function} func
-   * @param {String} key
-   */
-  addFunctionMember( model, func, key ) {
-    func = bind( func, model );
-    pathy( key ).override( model, {
-      get: function() {
-        return func;
-      }
-    });
-  }
-
-  /**
-   * @param {Model} model
-   * @param {Object} accessors
-   * @param {String} key
-   */
-  addPropertyMember( model, accessors, key ) {
-    var descriptor = {};
-    if ( typeof accessors.get === 'function' ) {
-      descriptor.get = bind( accessors.get, model );
-    }
-    if ( typeof accessors.set === 'function' ) {
-      descriptor.set = bind( accessors.set, model );
-    }
-    if ( Object.keys( descriptor ).length > 0 ) {
-      descriptor.initialize = false;
-      pathy( key ).override( model, descriptor );
-    }
   }
 }

@@ -13,6 +13,8 @@ export default class Model {
     this.$parentCollection = options.parentCollection;
   }
 
+  init() {}
+
   edit() {
     return this.$schema.cast( this.$view.fork() );
   }
