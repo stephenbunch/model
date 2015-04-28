@@ -33,10 +33,10 @@ export default class ValueSchema {
   constructor( type, options ) {
     this.options = options || {};
 
-    if ( typeof type === 'function' ) {
-      this.type = new SchemaType( type );
-    } else {
+    if ( typeof type.cast === 'function' ) {
       this.type = type;
+    } else {
+      this.type = new SchemaType( type );
     }
 
     this.validators = [];

@@ -1,19 +1,7 @@
-import SchemaParser from './SchemaParser';
-import ModelSchema from './ModelSchema';
-
-var modelSchemaParser = new SchemaParser();
-modelSchemaParser.typeMatchers.push( function( node ) {
-  return node instanceof ModelSchema;
-});
-
-export function Schema( node, ModelClass ) {
-  return new ModelSchema( modelSchemaParser.schemaFromNode( node ).paths, ModelClass );
-}
-
+export { default as Base } from './Model';
+export { default as ModelDecorator } from './ModelDecorator';
 export { default as Collection } from './Collection';
 export { default as CollectionSchema } from './CollectionSchema';
-export { default as Model } from './Model';
-export { default as ModelSchema } from './ModelSchema';
 export { default as ObjectSchema } from './ObjectSchema';
 export { default as SchemaParser } from './SchemaParser';
 export { default as SchemaPath } from './SchemaPath';

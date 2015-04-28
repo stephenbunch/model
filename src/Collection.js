@@ -2,7 +2,8 @@ import { findIndex } from './util';
 
 // Unfortunately, Object.create( Array.prototype ) is broken in ES5, and ES6
 // currently enforces the 'new' keyword, so it's impossible to create a factory
-// for an Array type using ES6 classes. We'll need to do this old school.
+// for an Array type using ES6 classes. We'll need to define this class the old
+// way.
 
 /**
  * @param {Model} parent

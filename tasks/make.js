@@ -1,6 +1,7 @@
 var gulp = require( 'gulp' );
 
-gulp.task( 'make', [ 'jshint' ], function() {
+// TODO: Enable jshint again once ES7 'class properties' are supported.
+gulp.task( 'make', function() {
   var fs = require( 'fs' );
   var browserify = require( 'browserify' );
   var babelify = require( 'babelify' );
@@ -17,7 +18,8 @@ gulp.task( 'make', [ 'jshint' ], function() {
     })
     .transform(
       babelify.configure({
-        sourceRoot: APP_ROOT + '/src'
+        sourceRoot: APP_ROOT + '/src',
+        optional: [ 'es7.classProperties' ]
       })
     )
     .transform(
@@ -30,7 +32,11 @@ gulp.task( 'make', [ 'jshint' ], function() {
     .pipe( gulp.dest( 'dist' ) );
 
   var lib = gulp.src( APP_ROOT + '/src/**/*.js' )
-    .pipe( babel() )
+    .pipe(
+      babel({
+        optional: [ 'es7.classProperties' ]
+      })
+    )
     .pipe( gulp.dest( APP_ROOT + '/lib' ) );
 
   return merge( bundle, lib );

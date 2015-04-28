@@ -1,10 +1,71 @@
 describe( 'Model', function() {
+  describe( 'Class', function() {
+    it( 'can be extended', function() {
+      class Foo extends model.Base {
+        static schema = {
+          bar: Number
+        }
+        baz() {
+          return this.bar;
+        }
+      }
+      var foo = new Foo();
+      expect( foo ).to.be.instanceof( Foo );
+      expect( foo.baz() ).to.equal( 0 );
+    });
+
+    it( 'should cast members as the specified type', function() {
+      class Foo extends model.Base {
+        static schema = {
+          bar: Number
+        }
+      }
+      var foo = new Foo();
+      foo.bar = '3';
+      expect( foo.bar ).to.equal( 3 );
+    });
+
+    it( 'should treat arrays as collections', function() {
+      class Tree extends model.Base {
+        static schema = {
+          leaves: Number
+        }
+      }
+
+      class Orchard extends model.Base {
+        static schema = {
+          trees: [ Tree ]
+        }
+      }
+      var orchard = new Orchard();
+      expect( orchard.trees ).to.be.instanceof( model.Collection );
+      var tree = orchard.trees.addNew();
+      expect( tree ).to.be.instanceof( Tree );
+      expect( tree.leaves ).to.equal( 0 );
+      expect( orchard.trees.length ).to.equal( 1 );
+    });
+  });
+
+  describe( '::new()', function() {
+    it( 'should behave the same way as the `new` operator', function() {
+      class Foo extends model.Base {
+        static schema = {
+          bar: Number
+        }
+      };
+      var foo = Foo.new();
+      expect( foo.bar ).to.equal( 0 );
+    });
+  });
+
   describe( '.edit()', function() {
     it( 'should return a fork', function() {
-      var Foo = model.Schema({
-        bar: Number
-      });
-      var main = Foo.new();
+      class Foo extends model.Base {
+        static schema = {
+          bar: Number
+        }
+      }
+      var main = new Foo();
       var edit = main.edit();
       main.bar = 2;
       expect( main.bar ).to.equal( 2 );
@@ -17,13 +78,17 @@ describe( 'Model', function() {
     });
 
     it( 'should fork collections', function() {
-      var Tree = model.Schema({
-        id: Number
-      });
-      var Orchard = model.Schema({
-        trees: [ Tree ]
-      });
-      var main = Orchard.new();
+      class Tree extends model.Base {
+        static schema = {
+          id: Number
+        }
+      }
+      class Orchard extends model.Base {
+        static schema = {
+          trees: [ Tree ]
+        }
+      }
+      var main = new Orchard();
       var edit = main.edit();
 
       // No changes have been made to 'edit', so when we add an item to main
@@ -71,23 +136,29 @@ describe( 'Model', function() {
 
   describe( '.$parent', function() {
     it( 'should return the parent model', function() {
-      var Foo = model.Schema({
-        name: String
-      });
-      var Bar = model.Schema({
-        id: String,
-        foo: Foo
-      });
-      var bar = Bar.new();
+      class Foo extends model.Base {
+        static schema = {
+          name: String
+        }
+      }
+      class Bar extends model.Base {
+        static schema = {
+          id: String,
+          foo: Foo
+        }
+      }
+      var bar = new Bar();
       expect( bar.foo.$parent ).to.equal( bar );
     });
 
     it( 'should return the parent of the parent collection', function() {
-      var Foo = model.Schema();
-      var Bar = model.Schema({
-        foos: [ Foo ]
-      });
-      var bar = Bar.new();
+      class Foo extends model.Base {}
+      class Bar extends model.Base {
+        static schema = {
+          foos: [ Foo ]
+        }
+      }
+      var bar = new Bar();
       bar.foos.addNew();
       expect( bar.foos[0].$parent ).to.equal( bar );
     });
@@ -95,11 +166,13 @@ describe( 'Model', function() {
 
   describe( '.$parentCollection', function() {
     it( 'should return the parent collection', function() {
-      var Foo = model.Schema();
-      var Bar = model.Schema({
-        foos: [ Foo ]
-      });
-      var bar = Bar.new();
+      class Foo extends model.Base {}
+      class Bar extends model.Base {
+        static schema = {
+          foos: [ Foo ]
+        }
+      }
+      var bar = new Bar();
       bar.foos.addNew();
       expect( bar.foos[0].$parentCollection ).to.equal( bar.foos );
     });
