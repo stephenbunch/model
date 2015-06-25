@@ -4,12 +4,12 @@ describe( 'ModelInspector', function() {
   describe( '.parentOfModel( model )', function() {
     it( 'should return the parent model', function() {
       class Foo extends orm.Model {
-        static schema = {
+        static attrs = {
           name: String
         }
       }
       class Bar extends orm.Model {
-        static schema = {
+        static attrs = {
           id: String,
           foo: Foo
         }
@@ -22,7 +22,7 @@ describe( 'ModelInspector', function() {
     it( 'should return the parent of the parent collection', function() {
       class Foo extends orm.Model {}
       class Bar extends orm.Model {
-        static schema = {
+        static attrs = {
           foos: [ Foo ]
         }
       }
@@ -37,7 +37,7 @@ describe( 'ModelInspector', function() {
     it( 'should return the parent collection', function() {
       class Foo extends orm.Model {}
       class Bar extends orm.Model {
-        static schema = {
+        static attrs = {
           foos: [ Foo ]
         }
       }

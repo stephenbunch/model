@@ -4,7 +4,7 @@ describe( 'ModelEditor', function() {
   describe( '.edit()', function() {
     it( 'should return a fork', function() {
       class Foo extends orm.Model {
-        static schema = {
+        static attrs = {
           bar: Number
         }
       }
@@ -23,12 +23,12 @@ describe( 'ModelEditor', function() {
 
     it( 'should fork collections', function() {
       class Tree extends orm.Model {
-        static schema = {
+        static attrs = {
           id: Number
         }
       }
       class Orchard extends orm.Model {
-        static schema = {
+        static attrs = {
           trees: [ Tree ]
         }
       }

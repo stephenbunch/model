@@ -22,7 +22,14 @@ function isCollectionPath( path ) {
 }
 
 export default class Model {
-  static schema = {}
+  static attrs = {}
+
+  static get schema() {
+    if ( !this._schema ) {
+      this._schema = parser.schemaFromNode( this.attrs || {} );
+    }
+    return this._schema;
+  }
 
   /**
    * Gets the decorator used to generate the schema paths for instances of this
@@ -31,9 +38,8 @@ export default class Model {
    */
   static get decorator() {
     if ( !this._decorator ) {
-      var schema = parser.schemaFromNode( this.schema || {} );
       this._decorator = new ModelDecorator(
-        schema.paths,
+        this.schema.paths,
         Collection,
         isCollectionPath
       );
@@ -93,6 +99,10 @@ export default class Model {
     this.editor.inspector.setParentCollectionOfModel( model, meta.parentCollection );
     this.prototype.constructor.call( model );
     return model;
+  }
+
+  static validate( value ) {
+    this.schema.validate( value );
   }
 
   constructor() {

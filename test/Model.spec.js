@@ -4,7 +4,7 @@ describe( 'Model', function() {
   describe( 'Class', function() {
     it( 'can be extended', function() {
       class Foo extends orm.Model {
-        static schema = {
+        static attrs = {
           bar: Number
         }
         baz() {
@@ -18,7 +18,7 @@ describe( 'Model', function() {
 
     it( 'should cast members as the specified type', function() {
       class Foo extends orm.Model {
-        static schema = {
+        static attrs = {
           bar: Number
         }
       }
@@ -29,13 +29,13 @@ describe( 'Model', function() {
 
     it( 'should treat arrays as collections', function() {
       class Tree extends orm.Model {
-        static schema = {
+        static attrs = {
           leaves: Number
         }
       }
 
       class Orchard extends orm.Model {
-        static schema = {
+        static attrs = {
           trees: [ Tree ]
         }
       }
@@ -51,12 +51,12 @@ describe( 'Model', function() {
   describe( '::new()', function() {
     it( 'should behave the same way as the `new` operator', function() {
       class Foo extends orm.Model {
-        static schema = {
+        static attrs = {
           bar: Number
         }
       };
       var foo = Foo.new();
       expect( foo.bar ).to.equal( 0 );
     });
-  });  
+  });
 });
