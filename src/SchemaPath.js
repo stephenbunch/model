@@ -1,10 +1,10 @@
-import pathy from 'pathy';
+import $path from '@stephenbunch/path';
 
 export default class SchemaPath {
   constructor( path, type ) {
     this.name = path;
     this.type = type;
-    this.accessor = pathy( path );
+    this.accessor = $path( path );
   }
 
   get( object ) {

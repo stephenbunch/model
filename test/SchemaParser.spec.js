@@ -1,8 +1,10 @@
+import orm from '../src';
+
 describe( 'SchemaParser', function() {
 
   var parser;
   beforeEach( function() {
-    parser = new model.SchemaParser();
+    parser = new orm.SchemaParser();
   });
 
   describe( '.schemaFromNode( node )', function() {
@@ -20,8 +22,8 @@ describe( 'SchemaParser', function() {
 
     it( 'should parse empty arrays as collections of objects', function() {
       var schema = parser.schemaFromNode( [] );
-      expect( schema.type ).to.be.instanceof( model.CollectionSchema );
-      expect( schema.type.type.type.cast ).to.equal( model.Any );
+      expect( schema.type ).to.be.instanceof( orm.CollectionSchema );
+      expect( schema.type.type.type.cast ).to.equal( orm.Any );
     });
 
     it( 'should parse nested objects', function() {
@@ -45,8 +47,8 @@ describe( 'SchemaParser', function() {
       expect( schema.paths.length ).to.equal( 1 );
       var foo = schema.paths[0];
       expect( foo.name ).to.equal( 'foo' );
-      expect( foo.type.type ).to.be.instanceof( model.CollectionSchema );
-      expect( foo.type.type.type.type ).to.be.instanceof( model.CollectionSchema );
+      expect( foo.type.type ).to.be.instanceof( orm.CollectionSchema );
+      expect( foo.type.type.type.type ).to.be.instanceof( orm.CollectionSchema );
       expect( foo.type.type.type.type.type.type.cast ).to.be.a( 'function' );
     });
 
@@ -133,7 +135,7 @@ describe( 'SchemaParser', function() {
       });
     });
 
-    it( 'should not cast model.Any', function() {
+    it( 'should not cast orm.Any', function() {
       var Foo = parser.schemaFromNode({
         bar: null
       });

@@ -1,4 +1,4 @@
-import pathy from 'pathy';
+import $path from '@stephenbunch/path';
 import { merge, cloneDeep } from './util';
 
 export default class View {
@@ -9,7 +9,7 @@ export default class View {
   }
 
   get( path ) {
-    var value = pathy( path ).get( this._local.value );
+    var value = $path( path ).get( this._local.value );
     if ( value === undefined && this.view ) {
       return this.view.get( path );
     } else {
@@ -18,7 +18,7 @@ export default class View {
   }
 
   set( path, value ) {
-    pathy( path ).set( this._local.value, value );
+    $path( path ).set( this._local.value, value );
   }
 
   reset() {
@@ -58,6 +58,6 @@ export default class View {
     if ( this.view ) {
       this.view.watch( path, listener );
     }
-    pathy( path ).watch( this._local.value, listener );
+    $path( path ).watch( this._local.value, listener );
   }
 }

@@ -1,4 +1,4 @@
-import pathy from 'pathy';
+import $path from '@stephenbunch/path';
 
 export default class ModelDecorator {
   /**
@@ -36,7 +36,7 @@ export default class ModelDecorator {
       path.name,
       path.type.type.type.type
     );
-    pathy( path.name ).override( model, {
+    $path( path.name ).override( model, {
       get: function() {
         return collection;
       }
@@ -48,7 +48,7 @@ export default class ModelDecorator {
    * @param {SchemaPath} path
    */
   _addAttributePath( model, path ) {
-    pathy( path.name ).override( model, {
+    $path( path.name ).override( model, {
       initialize: false,
       get: function() {
         return path.type.cast( model.$view.get( path.name ), {

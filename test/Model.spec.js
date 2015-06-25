@@ -1,7 +1,9 @@
+import orm from '../src';
+
 describe( 'Model', function() {
   describe( 'Class', function() {
     it( 'can be extended', function() {
-      class Foo extends model.Base {
+      class Foo extends orm.Model {
         static schema = {
           bar: Number
         }
@@ -15,7 +17,7 @@ describe( 'Model', function() {
     });
 
     it( 'should cast members as the specified type', function() {
-      class Foo extends model.Base {
+      class Foo extends orm.Model {
         static schema = {
           bar: Number
         }
@@ -26,19 +28,19 @@ describe( 'Model', function() {
     });
 
     it( 'should treat arrays as collections', function() {
-      class Tree extends model.Base {
+      class Tree extends orm.Model {
         static schema = {
           leaves: Number
         }
       }
 
-      class Orchard extends model.Base {
+      class Orchard extends orm.Model {
         static schema = {
           trees: [ Tree ]
         }
       }
       var orchard = new Orchard();
-      expect( orchard.trees ).to.be.instanceof( model.Collection );
+      expect( orchard.trees ).to.be.instanceof( orm.Collection );
       var tree = orchard.trees.addNew();
       expect( tree ).to.be.instanceof( Tree );
       expect( tree.leaves ).to.equal( 0 );
@@ -48,7 +50,7 @@ describe( 'Model', function() {
 
   describe( '::new()', function() {
     it( 'should behave the same way as the `new` operator', function() {
-      class Foo extends model.Base {
+      class Foo extends orm.Model {
         static schema = {
           bar: Number
         }
@@ -60,7 +62,7 @@ describe( 'Model', function() {
 
   describe( '.edit()', function() {
     it( 'should return a fork', function() {
-      class Foo extends model.Base {
+      class Foo extends orm.Model {
         static schema = {
           bar: Number
         }
@@ -78,12 +80,12 @@ describe( 'Model', function() {
     });
 
     it( 'should fork collections', function() {
-      class Tree extends model.Base {
+      class Tree extends orm.Model {
         static schema = {
           id: Number
         }
       }
-      class Orchard extends model.Base {
+      class Orchard extends orm.Model {
         static schema = {
           trees: [ Tree ]
         }
@@ -136,12 +138,12 @@ describe( 'Model', function() {
 
   describe( '.$parent', function() {
     it( 'should return the parent model', function() {
-      class Foo extends model.Base {
+      class Foo extends orm.Model {
         static schema = {
           name: String
         }
       }
-      class Bar extends model.Base {
+      class Bar extends orm.Model {
         static schema = {
           id: String,
           foo: Foo
@@ -152,8 +154,8 @@ describe( 'Model', function() {
     });
 
     it( 'should return the parent of the parent collection', function() {
-      class Foo extends model.Base {}
-      class Bar extends model.Base {
+      class Foo extends orm.Model {}
+      class Bar extends orm.Model {
         static schema = {
           foos: [ Foo ]
         }
@@ -166,8 +168,8 @@ describe( 'Model', function() {
 
   describe( '.$parentCollection', function() {
     it( 'should return the parent collection', function() {
-      class Foo extends model.Base {}
-      class Bar extends model.Base {
+      class Foo extends orm.Model {}
+      class Bar extends orm.Model {
         static schema = {
           foos: [ Foo ]
         }
