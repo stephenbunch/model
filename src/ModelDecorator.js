@@ -1,4 +1,7 @@
 import $path from '@stephenbunch/path';
+import ModelInspector from './ModelInspector';
+
+var inspector = new ModelInspector();
 
 export default class ModelDecorator {
   /**
@@ -51,12 +54,12 @@ export default class ModelDecorator {
     $path( path.name ).override( model, {
       initialize: false,
       get: function() {
-        return path.type.cast( model.$view.get( path.name ), {
+        return path.type.cast( inspector.viewForModel( model ).get( path.name ), {
           parent: model
         });
       },
       set: function( value ) {
-        model.$view.set(
+        inspector.viewForModel( model ).set(
           path.name,
           path.type.cast( value, {
             parent: model

@@ -4,9 +4,10 @@ import ModelDecorator from './ModelDecorator';
 import CollectionSchema from './CollectionSchema';
 import Collection from './Collection';
 import SchemaParser from './SchemaParser';
+import ModelEditor from './ModelEditor';
 
-var modelParser = new SchemaParser();
-modelParser.typeMatchers.push( function( node ) {
+var parser = new SchemaParser();
+parser.typeMatchers.push( function( node ) {
   return (
     node === Model ||
     node && node.prototype instanceof Model
@@ -23,9 +24,14 @@ function isCollectionPath( path ) {
 export default class Model {
   static schema = {}
 
+  /**
+   * Gets the decorator used to generate the schema paths for instances of this
+   * type.
+   * @type {ModelDecorator}
+   */
   static get decorator() {
     if ( !this._decorator ) {
-      var schema = modelParser.schemaFromNode( this.schema || {} );
+      var schema = parser.schemaFromNode( this.schema || {} );
       this._decorator = new ModelDecorator(
         schema.paths,
         Collection,
@@ -35,22 +41,37 @@ export default class Model {
     return this._decorator;
   }
 
+  /**
+   * Gets the model editor used to edit and inspect instances of this type.
+   * @type {ModelEditor}
+   */
+  static get editor() {
+    if ( !this._editor ) {
+      this._editor = new ModelEditor();
+    }
+    return this._editor;
+  }
+
+  /**
+   * Creates a new model instance.
+   * @param {Object} [defaults]
+   * @returns {Model}
+   */
   static new( defaults ) {
     return this.cast( defaults );
   }
 
-  static cast( value, options ) {
+  /**
+   * Casts an existing value to a new model instance.
+   * @param {View|Model|Object|null} [value]
+   * @param {Object} [meta]
+   * @returns {Model}
+   */
+  static cast( value, meta ) {
     if ( value instanceof this ) {
       return value;
     }
-    return new this( value, options );
-  }
-
-  /**
-   * @param {*} value
-   * @param {Object} [options]
-   */
-  constructor( value, options ) {
+    var model = Object.create( this.prototype );
     if ( value === undefined || value === null ) {
       value = {};
     }
@@ -66,37 +87,32 @@ export default class Model {
       view = new View();
       view.merge( value );
     }
+    this.editor.inspector.setViewForModel( model, view );
+    meta = meta || {};
+    this.editor.inspector.setParentOfModel( model, meta.parent );
+    this.editor.inspector.setParentCollectionOfModel( model, meta.parentCollection );
+    this.prototype.constructor.call( model );
+    return model;
+  }
 
-    this.$view = view;
-
-    options = options || {};
-    this.$parent = options.parent;
-    this.$parentCollection = options.parentCollection;
-
+  constructor() {
+    if ( !this.constructor.editor.inspector.viewForModel( this ) ) {
+      this.constructor.editor.inspector.setViewForModel( this, new View() );
+    }
     this.constructor.decorator.decorate( this );
-    this.init();
   }
 
-  init() {
-
-  }
-
-  edit() {
-    return new this.constructor( this.$view.fork() );
-  }
-
-  commit() {
-    this.$view.commit();
-  }
-
-  reset() {
-    this.$view.reset();
-  }
-
+  /**
+   * @returns {Object}
+   */
   toJSON() {
-    return this.$view.toJSON();
+    return this.constructor.editor.inspector.viewForModel( this ).toJSON();
   }
 
+  /**
+   * @param {*} other
+   * @returns {Boolean}
+   */
   equals( other ) {
     return other === this;
   }

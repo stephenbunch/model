@@ -1,4 +1,5 @@
 import { findIndex } from './util';
+import ModelInspector from './ModelInspector';
 
 // Unfortunately, Object.create( Array.prototype ) is broken in ES5, and ES6
 // currently enforces the 'new' keyword, so it's impossible to create a factory
@@ -15,11 +16,17 @@ export default function Collection( parent, key, schema ) {
     return new Collection( parent, key, schema );
   }
 
-  this.$parent = parent;
-  this.$key = key;
-  this.$schema = schema;
+  this._parent = parent;
+  this._key = key;
+  this._schema = schema;
 
-  this.$parent.$view.watch( this.$key, this._didChange.bind( this ) );
+  this._parentInspector = new ModelInspector();
+  this._childInspector = new ModelInspector();
+
+  this._parentInspector.viewForModel( this._parent ).watch(
+    this._key,
+    this._didChange.bind( this )
+  );
   this._didChange();
 }
 
@@ -63,35 +70,32 @@ Collection.prototype.clear = function() {
 };
 
 Collection.prototype.toJSON = function() {
-  return this.map( function( item ) {
-    return item.toJSON();
-  });
+  return this.map( x => x.toJSON() );
 };
 
 Collection.prototype._didChange = function() {
-  var self = this;
   if ( !this._updating ) {
     this.length = 0;
-    ( this.$parent.$view.get( this.$key ) || [] ).forEach( function( item ) {
-      self.push( self._cast( item ) );
+    let parentView = this._parentInspector.viewForModel( this._parent );
+    let items = parentView.get( this._key ) || [];
+    items.forEach( item => {
+      this.push( this._cast( item ) );
     });
   }
 };
 
 Collection.prototype._apply = function() {
   this._updating = true;
-  this.$parent.$view.set(
-    this.$key,
-    this.map( function( item ) {
-      return item.$view;
-    })
+  this._parentInspector.viewForModel( this._parent ).set(
+    this._key,
+    this.map( x => this._childInspector.viewForModel( x ) )
   );
   this._updating = false;
 };
 
 Collection.prototype._cast = function( value ) {
-  return this.$schema.cast( value, {
-    parent: this.$parent,
+  return this._schema.cast( value, {
+    parent: this._parent,
     parentCollection: this
   });
 };

@@ -1,5 +1,7 @@
 import Model from './Model';
 import ModelDecorator from './ModelDecorator';
+import ModelEditor from './ModelEditor';
+import ModelInspector from './ModelInspector';
 import Collection from './Collection';
 import CollectionSchema from './CollectionSchema';
 import ObjectSchema from './ObjectSchema';
@@ -14,6 +16,8 @@ import { merge, cloneDeep } from './util';
 export default {
   Model: Model,
   ModelDecorator: ModelDecorator,
+  ModelEditor: ModelEditor,
+  ModelInspector: ModelInspector,
   Collection: Collection,
   CollectionSchema: CollectionSchema,
   ObjectSchema: ObjectSchema,
