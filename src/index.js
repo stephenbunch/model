@@ -14,21 +14,21 @@ import View from './View';
 import { merge, cloneDeep } from './util';
 
 export default {
-  Model: Model,
-  ModelDecorator: ModelDecorator,
-  ModelEditor: ModelEditor,
-  ModelInspector: ModelInspector,
-  Collection: Collection,
-  CollectionSchema: CollectionSchema,
-  ObjectSchema: ObjectSchema,
-  SchemaParser: SchemaParser,
-  SchemaPath: SchemaPath,
-  ValidationError: ValidationError,
-  ValueSchema: ValueSchema,
-  Any: Any,
-  View: View,
+  Model,
+  ModelDecorator,
+  ModelEditor,
+  ModelInspector,
+  Collection,
+  CollectionSchema,
+  ObjectSchema,
+  SchemaParser,
+  SchemaPath,
+  ValidationError,
+  ValueSchema,
+  Any,
+  View,
   util: {
-    merge: merge,
-    cloneDeep: cloneDeep
+    merge,
+    cloneDeep
   }
 };
