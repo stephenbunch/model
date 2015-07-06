@@ -40,9 +40,8 @@ export default class SchemaParser {
     if ( this.isValueNode( node ) ) {
       return [ this.pathFactory( base, this.valueFromNode( node ) ) ];
     }
-    var self = this;
-    return Object.keys( node ).map( function( key ) {
-      return self.pathsFromNode(
+    return Object.keys( node ).map( key => {
+      return this.pathsFromNode(
         base ? base + '.' + key : key,
         node[ key ]
       );
@@ -95,8 +94,11 @@ export default class SchemaParser {
   valueFromNode( node ) {
     if ( this.isGenericType( node ) ) {
       let schemas = node.of.map( node => this.schemaFromNode( node ) );
-      return this.valueFactory( ( value, options ) => {
-        return node.cast( value, options, schemas );
+      return this.valueFactory({
+        attrs: node.attrs || {},
+        cast( value, options ) {
+          return node.cast( value, options, schemas );
+        }
       });
     } else {
       return this.valueFactory( this.typeFromNode( node ) );
@@ -105,7 +107,7 @@ export default class SchemaParser {
 
   collectionFromNode( node ) {
     if ( typeOf( node ) === 'array' && node.length > 0 ) {
-      return this.collectionFactory( this.valueFromNode( node[0] ) );
+      return this.collectionFactory( this.schemaFromNode( node[0] ) );
     } else {
       return this.collectionFactory( this.valueFactory( Type.any ) );
     }

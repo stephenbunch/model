@@ -91,13 +91,32 @@ describe( 'SchemaParser', function() {
       });
     });
 
-    it( 'should leave nulls as null when type is optional', function() {
+    it( 'should leave nulls as null when type is nullable', function() {
       var schema = parser.schemaFromNode({
-        foo: orm.Type.optional( [ [ Number ] ] )
+        foo: orm.Type.nullable([
+          [{
+            bar: Number
+          }]
+        ])
       });
+      expect( schema.paths[0].type.type.attrs.nullable ).to.equal( true );
       var obj = schema.cast();
       expect( obj ).to.eql({
         foo: null
+      });
+      obj = schema.cast({
+        foo: [
+          [{
+            bar: '2'
+          }]
+        ]
+      });
+      expect( obj ).to.eql({
+        foo: [
+          [{
+            bar: 2
+          }]
+        ]
       });
     });
 

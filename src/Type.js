@@ -5,10 +5,13 @@ export default {
     return value;
   },
 
-  optional( type ) {
+  nullable( type ) {
     return {
       [ Symbol.generic ]: true,
       of: [ type ],
+      attrs: {
+        nullable: true,
+      },
       cast( value, options, schemas ) {
         if ( value === null || value === undefined ) {
           return null;

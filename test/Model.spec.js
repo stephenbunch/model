@@ -46,6 +46,38 @@ describe( 'Model', function() {
       expect( tree.leaves ).to.equal( 0 );
       expect( orchard.trees.length ).to.equal( 1 );
     });
+
+    it( 'should return an empty object for null paths', function() {
+      class Foo extends orm.Model {
+        static attrs = {
+          bar: {
+            baz: Number,
+            qux: [ Number ]
+          }
+        }
+      }
+
+      var foo = new Foo();
+      expect( foo.bar.baz ).to.equal( 0 );
+      expect( foo.bar.qux ).to.eql( [] );
+    });
+
+    it( 'should return null for nullable paths unless the path has a value', function() {
+      class Foo extends orm.Model {
+        static attrs = {
+          bar: orm.Type.nullable({
+            baz: Number
+          })
+        }
+      }
+
+      var foo = new Foo();
+      expect( foo.bar ).to.equal( null );
+      foo.bar = {};
+      expect( foo.bar.baz ).to.equal( 0 );
+      foo.bar = null;
+      expect( foo.bar ).to.equal( null );
+    });
   });
 
   describe( '::new()', function() {

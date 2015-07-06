@@ -1,4 +1,4 @@
-import $path from '@stephenbunch/path';
+import Path from '@stephenbunch/path';
 import ModelInspector from './ModelInspector';
 
 var inspector = new ModelInspector();
@@ -19,12 +19,11 @@ export default class ModelDecorator {
    * @param {Model} model
    */
   decorate( model ) {
-    var self = this;
-    this.paths.forEach( function( path ) {
-      if ( self.collectionMatcher( path ) ) {
-        self._addCollectionPath( model, path );
+    this.paths.forEach( path => {
+      if ( this.collectionMatcher( path ) ) {
+        this._addCollectionPath( model, path );
       } else {
-        self._addAttributePath( model, path );
+        this._addAttributePath( model, path );
       }
     });
   }
@@ -39,7 +38,7 @@ export default class ModelDecorator {
       path.name,
       path.type.type.type.type
     );
-    $path( path.name ).override( model, {
+    Path( path.name ).override( model, {
       get: function() {
         return collection;
       }
@@ -51,8 +50,9 @@ export default class ModelDecorator {
    * @param {SchemaPath} path
    */
   _addAttributePath( model, path ) {
-    $path( path.name ).override( model, {
+    Path( path.name ).override( model, {
       initialize: false,
+      persist: true,
       get: function() {
         return path.type.cast( inspector.viewForModel( model ).get( path.name ), {
           parent: model
