@@ -1,5 +1,3 @@
-import ValidationError from './ValidationError';
-
 export default class ObjectSchema {
   constructor( paths ) {
     this.paths = paths;
@@ -13,15 +11,5 @@ export default class ObjectSchema {
       path.set( object, path.type.cast( path.get( value ), options ) );
       return object;
     }, {} );
-  }
-
-  validate( value ) {
-    this.paths.forEach( function( path ) {
-      try {
-        path.type.validate( path.get( value ) );
-      } catch ( err ) {
-        throw new ValidationError( 'The value at ' + path.name + ' is invalid.' );
-      }
-    });
   }
 }

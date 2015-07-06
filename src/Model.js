@@ -126,4 +126,4 @@ export default class Model {
   equals( other ) {
     return other === this;
   }
-}
+};

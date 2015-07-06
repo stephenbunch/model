@@ -1,14 +1,16 @@
 import ObjectSchema from './ObjectSchema';
 import CollectionSchema from './CollectionSchema';
-import ValueSchema, { Any } from './ValueSchema';
+import ValueSchema from './ValueSchema';
 import SchemaPath from './SchemaPath';
 import { cloneDeep, typeOf, factoryFromClass } from './util';
+import Type from './Type';
+import Symbol from './Symbol';
 
 export default class SchemaParser {
   constructor() {
     this.objectFactory = factoryFromClass( ObjectSchema );
     this.collectionFactory = factoryFromClass( CollectionSchema );
-    this.valueFactory = ValueSchema.defaultFactory;
+    this.valueFactory = factoryFromClass( ValueSchema );
     this.pathFactory = factoryFromClass( SchemaPath );
 
     this.typeMatchers = [];
@@ -51,7 +53,11 @@ export default class SchemaParser {
 
   valueFromLiteral( node ) {
     if ( node === null ) {
-      return Any;
+      return Type.any;
+    } else if ( node === String ) {
+      return Type.string;
+    } else if ( node === Number ) {
+      return Type.number;
     }
     return node;
   }
@@ -66,20 +72,6 @@ export default class SchemaParser {
     return result;
   }
 
-  isTypeNodeWithOptions( node ) {
-    return (
-      typeof node === 'object' &&
-      node !== null &&
-      this.isTypeNode( node.type )
-    );
-  }
-
-  optionsFromNode( node ) {
-    var options = cloneDeep( node );
-    delete options.type;
-    return options;
-  }
-
   typeFromNode( node ) {
     if ( this.isCollectionType( node ) ) {
       return this.collectionFromNode( node );
@@ -92,16 +84,20 @@ export default class SchemaParser {
     return value === Array || typeOf( value ) === 'array';
   }
 
+  isGenericType( value ) {
+    return value && value[ Symbol.generic ] === true;
+  }
+
   isValueNode( node ) {
-    return this.isTypeNode( node ) || this.isTypeNodeWithOptions( node );
+    return this.isTypeNode( node ) || this.isGenericType( node );
   }
 
   valueFromNode( node ) {
-    if ( this.isTypeNodeWithOptions( node ) ) {
-      return this.valueFactory(
-        this.typeFromNode( node.type ),
-        this.optionsFromNode( node )
-      );
+    if ( this.isGenericType( node ) ) {
+      let schemas = node.of.map( node => this.schemaFromNode( node ) );
+      return this.valueFactory( ( value, options ) => {
+        return node.cast( value, options, schemas );
+      });
     } else {
       return this.valueFactory( this.typeFromNode( node ) );
     }
@@ -111,7 +107,7 @@ export default class SchemaParser {
     if ( typeOf( node ) === 'array' && node.length > 0 ) {
       return this.collectionFactory( this.valueFromNode( node[0] ) );
     } else {
-      return this.collectionFactory( this.valueFactory( Any ) );
+      return this.collectionFactory( this.valueFactory( Type.any ) );
     }
   }
 }

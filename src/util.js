@@ -88,7 +88,7 @@ export function merge( object, other ) {
     }
     source[ key ] = bValue;
   }
-}
+};
 
 /**
  * Gets the internal JavaScript [[Class]] of an object.
@@ -101,7 +101,7 @@ export function merge( object, other ) {
 export function typeOf( value ) {
   return Object.prototype.toString.call( value )
     .match( /^\[object\s(.*)\]$/ )[1].toLowerCase();
-}
+};
 
 /**
  * Gets the index of the first match or -1 if no matches are found.
@@ -116,7 +116,7 @@ export function findIndex( array, matcher ) {
     }
   }
   return -1;
-}
+};
 
 /**
  * Returns the first match or null of no matches are found.
@@ -131,7 +131,7 @@ export function find( array, matcher ) {
   } else {
     return null;
   }
-}
+};
 
 /**
  * Creates a factory function that returns a new instance of the specified
@@ -145,7 +145,7 @@ export function factoryFromClass( Class ) {
     Class.prototype.constructor.apply( instance, arguments );
     return instance;
   };
-}
+};
 
 /**
  * @param {Function} child The child class.
@@ -160,4 +160,4 @@ export function inherits( child, parent ) {
     Object.defineProperty( child.prototype, prop, Object.getOwnPropertyDescriptor( proto, prop ) );
   });
   return child;
-}
+};

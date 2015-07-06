@@ -23,7 +23,7 @@ describe( 'SchemaParser', function() {
     it( 'should parse empty arrays as collections of objects', function() {
       var schema = parser.schemaFromNode( [] );
       expect( schema.type ).to.be.instanceof( orm.CollectionSchema );
-      expect( schema.type.type.type.cast ).to.equal( orm.Any );
+      expect( schema.type.type.type.cast ).to.equal( orm.Type.any );
     });
 
     it( 'should parse nested objects', function() {
@@ -91,12 +91,9 @@ describe( 'SchemaParser', function() {
       });
     });
 
-    it( 'should leave nulls as null when schema is optional', function() {
+    it( 'should leave nulls as null when type is optional', function() {
       var schema = parser.schemaFromNode({
-        foo: {
-          type: [ [ Number ] ],
-          optional: true
-        }
+        foo: orm.Type.optional( [ [ Number ] ] )
       });
       var obj = schema.cast();
       expect( obj ).to.eql({
@@ -135,7 +132,7 @@ describe( 'SchemaParser', function() {
       });
     });
 
-    it( 'should not cast orm.Any', function() {
+    it( 'should not cast Type.any', function() {
       var Foo = parser.schemaFromNode({
         bar: null
       });

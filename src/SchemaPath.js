@@ -14,4 +14,4 @@ export default class SchemaPath {
   set( object, value ) {
     this.accessor.set( object, value );
   }
-}
+};

@@ -1,34 +1,34 @@
+import Collection from './Collection';
+import CollectionSchema from './CollectionSchema';
 import Model from './Model';
 import ModelDecorator from './ModelDecorator';
 import ModelEditor from './ModelEditor';
 import ModelInspector from './ModelInspector';
-import Collection from './Collection';
-import CollectionSchema from './CollectionSchema';
 import ObjectSchema from './ObjectSchema';
 import SchemaParser from './SchemaParser';
 import SchemaPath from './SchemaPath';
-import ValidationError from './ValidationError';
-import ValueSchema from './ValueSchema';
-import { Any } from './ValueSchema';
-import View from './View';
+import Symbol from './Symbol';
+import Type from './Type';
 import { merge, cloneDeep } from './util';
+import ValueSchema from './ValueSchema';
+import View from './View';
 
 export default {
+  Collection,
+  CollectionSchema,
   Model,
   ModelDecorator,
   ModelEditor,
   ModelInspector,
-  Collection,
-  CollectionSchema,
   ObjectSchema,
   SchemaParser,
   SchemaPath,
-  ValidationError,
-  ValueSchema,
-  Any,
-  View,
+  Symbol,
+  Type,
   util: {
     merge,
     cloneDeep
-  }
+  },
+  ValueSchema,
+  View
 };

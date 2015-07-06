@@ -19,4 +19,4 @@ export default class ModelEditor {
   reset( model ) {
     this.inspector.viewForModel( model ).reset();
   }
-}
+};
