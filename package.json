@@ -1,6 +1,6 @@
 {
   "name": "@stephenbunch/orm",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A place to put ORM stuff.",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,6 @@
     "gulp": "^3.9.0"
   },
   "dependencies": {
-    "@stephenbunch/path": "^0.1.0"
+    "@stephenbunch/path": "^0.2.0"
   }
 }
