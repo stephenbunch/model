@@ -5,6 +5,7 @@ import CollectionSchema from './CollectionSchema';
 import Collection from './Collection';
 import SchemaParser from './SchemaParser';
 import ModelEditor from './ModelEditor';
+import ObjectView from './ObjectView';
 
 var parser = new SchemaParser();
 parser.typeMatchers.push( function( node ) {
@@ -85,13 +86,7 @@ export default class Model {
     if ( value instanceof View ) {
       view = value;
     } else {
-      if ( value.toJSON ) {
-        value = value.toJSON();
-      } else {
-        value = cloneDeep( value );
-      }
-      view = new View();
-      view.merge( value );
+      view = new View( new ObjectView( value ) );
     }
     this.editor.inspector.setViewForModel( model, view );
     meta = meta || {};

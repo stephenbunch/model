@@ -1,4 +1,4 @@
-import $path from '@stephenbunch/path';
+import Path from '@stephenbunch/path';
 import { merge, cloneDeep } from './util';
 
 /**
@@ -58,7 +58,7 @@ export default class View {
    * @returns {*}
    */
   get( path ) {
-    var value = $path( path ).get( this._local.value );
+    var value = Path( path ).get( this._local.value );
     if ( value === undefined && this._view ) {
       return this._view.get( path );
     } else {
@@ -71,7 +71,7 @@ export default class View {
    * @param {*} value
    */
   set( path, value ) {
-    $path( path ).set( this._local.value, value );
+    Path( path ).set( this._local.value, value );
   }
 
   reset() {
@@ -127,7 +127,7 @@ export default class View {
     if ( this._view ) {
       this._view.watch( path, listener );
     }
-    $path( 'value.' + path ).watch( this._local, listener );
+    Path( 'value.' + path ).watch( this._local, listener );
   }
 
   /**
@@ -138,6 +138,6 @@ export default class View {
     if ( this._view ) {
       this._view.unwatch( path, listener );
     }
-    $path( 'value.' + path ).unwatch( this._local, listener );
+    Path( 'value.' + path ).unwatch( this._local, listener );
   }
 }

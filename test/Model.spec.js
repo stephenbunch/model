@@ -60,6 +60,10 @@ describe( 'Model', function() {
       var foo = new Foo();
       expect( foo.bar.baz ).to.equal( 0 );
       expect( foo.bar.qux ).to.eql( [] );
+      foo.bar = {
+        qux: [ 1, 2 ]
+      };
+      expect( foo.bar.qux ).to.eql([ 1, 2 ]);
     });
 
     it( 'should return null for nullable paths unless the path has a value', function() {
@@ -77,6 +81,24 @@ describe( 'Model', function() {
       expect( foo.bar.baz ).to.equal( 0 );
       foo.bar = null;
       expect( foo.bar ).to.equal( null );
+    });
+  });
+
+  describe( '::cast( value )', function() {
+    it( 'should wrap the object rather than making a copy', function() {
+      var obj = { bar: 2 };
+
+      class Foo extends orm.Model {
+        static attrs = {
+          bar: Number
+        }
+      }
+
+      var foo = Foo.cast( obj );
+      expect( foo.bar ).to.equal( 2 );
+
+      obj.bar = 3;
+      expect( foo.bar ).to.equal( 3 );
     });
   });
 
