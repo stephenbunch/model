@@ -1,5 +1,5 @@
 import View from './View';
-import { cloneDeep } from './util';
+import { cloneDeep, factoryFromClass } from './util';
 import ModelDecorator from './ModelDecorator';
 import CollectionSchema from './CollectionSchema';
 import Collection from './Collection';
@@ -41,7 +41,7 @@ export default class Model {
     if ( !this._decorator ) {
       this._decorator = new ModelDecorator(
         this.schema.paths,
-        Collection,
+        factoryFromClass( Collection ),
         isCollectionPath
       );
     }

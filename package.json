@@ -1,6 +1,6 @@
 {
   "name": "@stephenbunch/orm",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A place to put ORM stuff.",
   "main": "index.js",
   "scripts": {

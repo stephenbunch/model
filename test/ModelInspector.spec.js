@@ -29,7 +29,7 @@ describe( 'ModelInspector', function() {
       var inspector = new orm.ModelInspector();
       var bar = new Bar();
       bar.foos.addNew();
-      expect( inspector.parentOfModel( bar.foos[0] ) ).to.equal( bar );
+      expect( inspector.parentOfModel( bar.foos.get( 0 ) ) ).to.equal( bar );
     });
   });
 
@@ -44,7 +44,7 @@ describe( 'ModelInspector', function() {
       var inspector = new orm.ModelInspector();
       var bar = new Bar();
       bar.foos.addNew();
-      expect( inspector.parentCollectionOfModel( bar.foos[0] ) ).to.equal( bar.foos );
+      expect( inspector.parentCollectionOfModel( bar.foos.get( 0 ) ) ).to.equal( bar.foos );
     });
   });
 });

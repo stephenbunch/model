@@ -56,12 +56,12 @@ describe( 'ModelEditor', function() {
       expect( edit.trees.length ).to.equal( 2 );
 
       // We still see the same two items in 'edit'.
-      expect( edit.trees[0].id ).to.equal( 1 );
-      expect( edit.trees[1].id ).to.equal( 2 );
+      expect( edit.trees.get( 0 ).id ).to.equal( 1 );
+      expect( edit.trees.get( 1 ).id ).to.equal( 2 );
 
       // We see the first and third item in 'main'.
-      expect( main.trees[0].id ).to.equal( 1 );
-      expect( main.trees[1].id ).to.equal( 3 );
+      expect( main.trees.get( 0 ).id ).to.equal( 1 );
+      expect( main.trees.get( 1 ).id ).to.equal( 3 );
 
       // When we commit the fork, the collection is replaced with the new
       // changes.
@@ -71,11 +71,11 @@ describe( 'ModelEditor', function() {
       expect( main.trees.length ).to.equal( 2 );
       expect( edit.trees.length ).to.equal( 2 );
 
-      expect( main.trees[0].id ).to.equal( 1 );
-      expect( edit.trees[0].id ).to.equal( 1 );
+      expect( main.trees.get( 0 ).id ).to.equal( 1 );
+      expect( edit.trees.get( 0 ).id ).to.equal( 1 );
 
-      expect( main.trees[1].id ).to.equal( 2 );
-      expect( edit.trees[1].id ).to.equal( 2 );
+      expect( main.trees.get( 1 ).id ).to.equal( 2 );
+      expect( edit.trees.get( 1 ).id ).to.equal( 2 );
     });
   });
 });

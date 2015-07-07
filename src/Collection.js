@@ -1,101 +1,99 @@
 import { findIndex } from './util';
 import ModelInspector from './ModelInspector';
 
-// Unfortunately, Object.create( Array.prototype ) is broken in ES5, and ES6
-// currently enforces the 'new' keyword, so it's impossible to create a factory
-// for an Array type using ES6 classes. We'll need to define this class the old
-// way.
+export default class Collection {
+  /**
+   * @param {Model} parent
+   * @param {String} key
+   * @param {ModelSchema} schema
+   */
+  constructor( parent, key, schema ) {
+    this._parent = parent;
+    this._key = key;
+    this._schema = schema;
 
-/**
- * @param {Model} parent
- * @param {String} key
- * @param {ModelSchema} schema
- */
-export default function Collection( parent, key, schema ) {
-  if ( !( this instanceof Collection ) ) {
-    return new Collection( parent, key, schema );
+    this._parentInspector = new ModelInspector();
+    this._childInspector = new ModelInspector();
   }
 
-  this._parent = parent;
-  this._key = key;
-  this._schema = schema;
+  get _view() {
+    return this._parentInspector.viewForModel( this._parent );
+  }
 
-  this._parentInspector = new ModelInspector();
-  this._childInspector = new ModelInspector();
+  get _items() {
+    return this._view.get( this._key ) || [];
+  }
 
-  this._parentInspector.viewForModel( this._parent ).watch(
-    this._key,
-    this._didChange.bind( this )
-  );
-  this._didChange();
-}
+  get length() {
+    return this._items.length;
+  }
 
-Collection.prototype = [];
-Collection.prototype.constructor = Collection;
+  get( index ) {
+    var item = this._items[ index ];
+    return item && this._cast( item );
+  }
 
-Collection.prototype.add = function( item ) {
-  if ( this.indexOf( item ) === -1 ) {
-    this.remove( item );
+  set( index, item ) {
     item = this._cast( item );
-    this.push( item );
-    this._apply();
+    this._update( items => {
+      items[ index ] = item;
+    });
   }
-  return item;
-};
 
-Collection.prototype.remove = function( item ) {
-  var index = this.indexOf( item );
-  if ( index === -1 ) {
-    index = findIndex( this, function( model ) {
+  new( defaults ) {
+    return this._cast( defaults );
+  }
+
+  add( item ) {
+    item = this._cast( item );
+    this._update( items => items.concat([ item ]) );
+    return item;
+  }
+
+  addNew( defaults ) {
+    return this.add( this.new( defaults ) );
+  }
+
+  remove( item ) {
+    var index = this.indexOf( item );
+    if ( index > -1 ) {
+      this._update( items => {
+        items.splice( index, 1 );
+      });
+    }
+  }
+
+  clear() {
+    this._update( items => [] );
+  }
+
+  indexOf( item ) {
+    item = this._cast( item );
+    var index = findIndex( this.toArray(), function( model ) {
       return model.equals( item );
     });
+    return index;
   }
-  if ( index > -1 ) {
-    this.splice( index, 1 );
-    this._apply();
+
+  toArray() {
+    return this._items.map( x => this._cast( x ) );
   }
-};
 
-Collection.prototype.new = function( defaults ) {
-  return this._cast( defaults );
-};
+  toJSON() {
+    return this.toArray().map( x => x.toJSON() );
+  }
 
-Collection.prototype.addNew = function( defaults ) {
-  return this.add( this.new( defaults ) );
-};
-
-Collection.prototype.clear = function() {
-  this.length = 0;
-  this._apply();
-};
-
-Collection.prototype.toJSON = function() {
-  return this.map( x => x.toJSON() );
-};
-
-Collection.prototype._didChange = function() {
-  if ( !this._updating ) {
-    this.length = 0;
-    let parentView = this._parentInspector.viewForModel( this._parent );
-    let items = parentView.get( this._key ) || [];
-    items.forEach( item => {
-      this.push( this._cast( item ) );
+  _cast( value ) {
+    return this._schema.cast( value, {
+      parent: this._parent,
+      parentCollection: this
     });
   }
-};
 
-Collection.prototype._apply = function() {
-  this._updating = true;
-  this._parentInspector.viewForModel( this._parent ).set(
-    this._key,
-    this.map( x => this._childInspector.viewForModel( x ) )
-  );
-  this._updating = false;
-};
-
-Collection.prototype._cast = function( value ) {
-  return this._schema.cast( value, {
-    parent: this._parent,
-    parentCollection: this
-  });
+  _update( map ) {
+    var items = this.toArray();
+    items = map( items ) || items;
+    items = items.map( x => this._childInspector.viewForModel( x ) );
+    this._view.set( this._key, items );
+  }
 };
