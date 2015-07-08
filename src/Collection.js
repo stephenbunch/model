@@ -38,6 +38,25 @@ export default class Collection {
     return this[ _items ].length;
   }
 
+  [ Symbol.iterator ]() {
+    var index = -1;
+    return {
+      next: () => {
+        index += 1;
+        if ( index < this.size ) {
+          return {
+            value: this.get( index ),
+            done: false
+          };
+        } else {
+          return {
+            done: true
+          };
+        }
+      }
+    };
+  }
+
   get( index ) {
     var item = this[ _items ][ index ];
     return item && this[ _cast ]( item );

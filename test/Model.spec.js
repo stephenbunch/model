@@ -103,14 +103,14 @@ describe( 'Model', function() {
     });
   });
 
-  describe( '::new()', function() {
+  describe( '::create()', function() {
     it( 'should behave the same way as the `new` operator', function() {
       class Foo extends orm.Model {
         static attrs = {
           bar: Number
         }
       };
-      var foo = Foo.new();
+      var foo = Foo.create();
       expect( foo.bar ).to.equal( 0 );
     });
   });

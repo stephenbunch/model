@@ -63,7 +63,7 @@ export default class Model {
    * @param {Object} [defaults]
    * @returns {Model}
    */
-  static new( defaults ) {
+  static create( defaults ) {
     return this.cast( defaults );
   }
 
