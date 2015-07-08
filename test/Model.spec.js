@@ -40,7 +40,7 @@ describe( 'Model', function() {
         }
       }
       var orchard = new Orchard();
-      expect( orchard.trees ).to.be.instanceof( orm.Collection );
+      expect( orchard.trees ).to.be.instanceof( orm.ModelCollection );
       var tree = orchard.trees.create();
       expect( tree ).to.be.instanceof( Tree );
       expect( tree.leaves ).to.equal( 0 );

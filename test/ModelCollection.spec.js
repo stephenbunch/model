@@ -1,6 +1,6 @@
 import orm from '../src';
 
-describe( 'Collection', function() {
+describe( 'ModelCollection', function() {
   it( 'should be iterable', function() {
     class Tree extends orm.Model {
       static attrs = {

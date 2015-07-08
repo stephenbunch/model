@@ -2,7 +2,7 @@ import View from './View';
 import { cloneDeep, factoryFromClass } from './util';
 import ModelDecorator from './ModelDecorator';
 import CollectionSchema from './CollectionSchema';
-import Collection from './Collection';
+import ModelCollection from './ModelCollection';
 import SchemaParser from './SchemaParser';
 import ModelEditor from './ModelEditor';
 import ObjectView from './ObjectView';
@@ -16,7 +16,7 @@ function isCollectionPath( path ) {
   );
 }
 
-const collectionFactory = factoryFromClass( Collection );
+const collectionFactory = factoryFromClass( ModelCollection );
 
 const parser = new SchemaParser();
 parser.typeMatchers.push( function( node ) {
@@ -34,9 +34,7 @@ const _decorator = Symbol();
 export default class Model {
   static attrs = {}
 
-  static get collectionFactory() {
-    return collectionFactory;
-  }
+  static collectionFactory = collectionFactory
 
   static get schema() {
     if ( !this[ _schema ] ) {

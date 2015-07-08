@@ -1,6 +1,6 @@
-import Collection from './Collection';
 import CollectionSchema from './CollectionSchema';
 import Model from './Model';
+import ModelCollection from './ModelCollection';
 import ModelDecorator from './ModelDecorator';
 import ModelEditor from './ModelEditor';
 import ModelInspector from './ModelInspector';
@@ -9,14 +9,18 @@ import SchemaParser from './SchemaParser';
 import SchemaPath from './SchemaPath';
 import Symbol from './Symbol';
 import Type from './Type';
-import { merge, cloneDeep } from './util';
+import {
+  cloneDeep,
+  factoryFromClass,
+  merge
+} from './util';
 import ValueSchema from './ValueSchema';
 import View from './View';
 
 export default {
-  Collection,
   CollectionSchema,
   Model,
+  ModelCollection,
   ModelDecorator,
   ModelEditor,
   ModelInspector,
@@ -26,8 +30,9 @@ export default {
   Symbol,
   Type,
   util: {
-    merge,
-    cloneDeep
+    cloneDeep,
+    factoryFromClass,
+    merge
   },
   ValueSchema,
   View

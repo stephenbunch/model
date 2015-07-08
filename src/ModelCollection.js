@@ -11,7 +11,7 @@ const _items = Symbol();
 const _cast = Symbol();
 const _update = Symbol();
 
-export default class Collection {
+export default class ModelCollection {
   /**
    * @param {Model} parent
    * @param {String} key
