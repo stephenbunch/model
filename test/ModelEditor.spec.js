@@ -38,22 +38,22 @@ describe( 'ModelEditor', function() {
 
       // No changes have been made to 'edit', so when we add an item to main
       // collection, the change is seen in both versions.
-      main.trees.addNew({ id: 1 });
-      expect( main.trees.length ).to.equal( 1 );
-      expect( edit.trees.length ).to.equal( 1 );
+      main.trees.push( main.trees.create({ id: 1 }) );
+      expect( main.trees.size ).to.equal( 1 );
+      expect( edit.trees.size ).to.equal( 1 );
 
       // When we modify the collection in 'edit', the change only doesn't
       // appear in 'main'.
-      edit.trees.addNew({ id: 2 });
-      expect( edit.trees.length ).to.equal( 2 );
-      expect( main.trees.length ).to.equal( 1 );
+      edit.trees.push( edit.trees.create({ id: 2 }) );
+      expect( edit.trees.size ).to.equal( 2 );
+      expect( main.trees.size ).to.equal( 1 );
 
       // We change the main collection again, but this time, we don't see
       // the change in 'edit' because that version already has pending changes.
-      main.trees.addNew({ id: 3 });
+      main.trees.push( main.trees.create({ id: 3 }) );
 
-      expect( main.trees.length ).to.equal( 2 );
-      expect( edit.trees.length ).to.equal( 2 );
+      expect( main.trees.size ).to.equal( 2 );
+      expect( edit.trees.size ).to.equal( 2 );
 
       // We still see the same two items in 'edit'.
       expect( edit.trees.get( 0 ).id ).to.equal( 1 );
@@ -68,8 +68,8 @@ describe( 'ModelEditor', function() {
       editor.commit( edit );
 
       // Now we see the same items in both versions.
-      expect( main.trees.length ).to.equal( 2 );
-      expect( edit.trees.length ).to.equal( 2 );
+      expect( main.trees.size ).to.equal( 2 );
+      expect( edit.trees.size ).to.equal( 2 );
 
       expect( main.trees.get( 0 ).id ).to.equal( 1 );
       expect( edit.trees.get( 0 ).id ).to.equal( 1 );

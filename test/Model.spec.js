@@ -41,10 +41,11 @@ describe( 'Model', function() {
       }
       var orchard = new Orchard();
       expect( orchard.trees ).to.be.instanceof( orm.Collection );
-      var tree = orchard.trees.addNew();
+      var tree = orchard.trees.create();
       expect( tree ).to.be.instanceof( Tree );
       expect( tree.leaves ).to.equal( 0 );
-      expect( orchard.trees.length ).to.equal( 1 );
+      orchard.trees.push( tree );
+      expect( orchard.trees.size ).to.equal( 1 );
     });
 
     it( 'should return an empty object for null paths', function() {
