@@ -2,7 +2,7 @@ import { typeOf } from './util';
 
 export default class CollectionSchema {
   constructor( type ) {
-    this.type = type;
+    this.collectionType = type;
   }
 
   cast( value, options ) {
@@ -11,7 +11,7 @@ export default class CollectionSchema {
     }
     if ( typeOf( value ) === 'array' ) {
       return value.map( item => {
-        return this.type.cast( item, options );
+        return this.collectionType.cast( item, options );
       });
     } else {
       return [];

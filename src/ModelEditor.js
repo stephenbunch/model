@@ -5,10 +5,17 @@ export default class ModelEditor {
     this.inspector = new ModelInspector();
   }
 
+  /**
+   * @param {Model} model
+   */
   commit( model ) {
     this.inspector.viewForModel( model ).commit();
   }
 
+  /**
+   * @param {Model} model
+   * @returns {Model}
+   */
   edit( model ) {
     return model.constructor.cast( this.inspector.viewForModel( model ).fork(), {
       parent: this.inspector.parentOfModel( model ),
@@ -16,6 +23,9 @@ export default class ModelEditor {
     });
   }
 
+  /**
+   * @param {Model} model
+   */
   reset( model ) {
     this.inspector.viewForModel( model ).reset();
   }

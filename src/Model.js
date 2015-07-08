@@ -7,7 +7,18 @@ import SchemaParser from './SchemaParser';
 import ModelEditor from './ModelEditor';
 import ObjectView from './ObjectView';
 
-var parser = new SchemaParser();
+function isCollectionPath( path ) {
+  return (
+    path.pathType.valueType instanceof CollectionSchema && (
+      path.pathType.valueType.collectionType.valueType === Model ||
+      path.pathType.valueType.collectionType.valueType.prototype instanceof Model
+    )
+  );
+}
+
+const collectionFactory = factoryFromClass( Collection );
+
+const parser = new SchemaParser();
 parser.typeMatchers.push( function( node ) {
   return (
     node === Model ||
@@ -15,21 +26,23 @@ parser.typeMatchers.push( function( node ) {
   );
 });
 
-function isCollectionPath( path ) {
-  return (
-    path.type.type instanceof CollectionSchema &&
-    path.type.type.type.type.prototype instanceof Model
-  );
-}
+const editor = new ModelEditor();
+
+const _schema = Symbol();
+const _decorator = Symbol();
 
 export default class Model {
   static attrs = {}
 
+  static get collectionFactory() {
+    return collectionFactory;
+  }
+
   static get schema() {
-    if ( !this._schema ) {
-      this._schema = parser.schemaFromNode( this.attrs || {} );
+    if ( !this[ _schema ] ) {
+      this[ _schema ] = parser.schemaFromNode( this.attrs || {} );
     }
-    return this._schema;
+    return this[ _schema ];
   }
 
   /**
@@ -37,26 +50,12 @@ export default class Model {
    * type.
    * @type {ModelDecorator}
    */
-  static get decorator() {
-    if ( !this._decorator ) {
-      this._decorator = new ModelDecorator(
-        this.schema.paths,
-        factoryFromClass( Collection ),
-        isCollectionPath
-      );
-    }
-    return this._decorator;
-  }
-
-  /**
-   * Gets the model editor used to edit and inspect instances of this type.
-   * @type {ModelEditor}
-   */
-  static get editor() {
-    if ( !this._editor ) {
-      this._editor = new ModelEditor();
-    }
-    return this._editor;
+  static get [ _decorator ]() {
+    return new ModelDecorator(
+      this.schema.paths,
+      this.collectionFactory,
+      isCollectionPath
+    )
   }
 
   /**
@@ -88,30 +87,26 @@ export default class Model {
     } else {
       view = new View( new ObjectView( value ) );
     }
-    this.editor.inspector.setViewForModel( model, view );
+    editor.inspector.setViewForModel( model, view );
     meta = meta || {};
-    this.editor.inspector.setParentOfModel( model, meta.parent );
-    this.editor.inspector.setParentCollectionOfModel( model, meta.parentCollection );
+    editor.inspector.setParentOfModel( model, meta.parent );
+    editor.inspector.setParentCollectionOfModel( model, meta.parentCollection );
     this.prototype.constructor.call( model );
     return model;
   }
 
-  static validate( value ) {
-    this.schema.validate( value );
-  }
-
   constructor() {
-    if ( !this.constructor.editor.inspector.viewForModel( this ) ) {
-      this.constructor.editor.inspector.setViewForModel( this, new View() );
+    if ( !editor.inspector.viewForModel( this ) ) {
+      editor.inspector.setViewForModel( this, new View() );
     }
-    this.constructor.decorator.decorate( this );
+    this.constructor[ _decorator ].decorate( this );
   }
 
   /**
    * @returns {Object}
    */
   toJSON() {
-    return this.constructor.editor.inspector.viewForModel( this ).toJSON();
+    return editor.inspector.viewForModel( this ).toJSON();
   }
 
   /**

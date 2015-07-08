@@ -4,9 +4,9 @@ export default class ValueSchema {
    */
   constructor( type ) {
     if ( type && typeof type.cast === 'function' ) {
-      this.type = type;
+      this.valueType = type;
     } else {
-      this.type = {
+      this.valueType = {
         cast: type
       };
     }
@@ -16,6 +16,6 @@ export default class ValueSchema {
     if ( value === undefined ) {
       value = null;
     }
-    return this.type.cast( value, options );
+    return this.valueType.cast( value, options );
   }
 };

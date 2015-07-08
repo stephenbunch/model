@@ -2,7 +2,7 @@ const viewKey = Symbol();
 const parentKey = Symbol();
 const parentCollectionKey = Symbol();
 
-export default class ModelHelper {
+export default class ModelInspector {
   viewForModel( model ) {
     return model[ viewKey ];
   }

@@ -3,7 +3,7 @@ import Path from '@stephenbunch/path';
 export default class SchemaPath {
   constructor( path, type ) {
     this.name = path;
-    this.type = type;
+    this.pathType = type;
     this.accessor = Path( path );
   }
 

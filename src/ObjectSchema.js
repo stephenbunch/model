@@ -8,7 +8,7 @@ export default class ObjectSchema {
       value = null;
     }
     return this.paths.reduce( function( object, path ) {
-      path.set( object, path.type.cast( path.get( value ), options ) );
+      path.set( object, path.pathType.cast( path.get( value ), options ) );
       return object;
     }, {} );
   }

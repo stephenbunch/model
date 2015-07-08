@@ -15,15 +15,15 @@ describe( 'SchemaParser', function() {
       });
       expect( schema.paths.length ).to.equal( 2 );
       expect( schema.paths[0].name ).to.equal( 'foo' );
-      expect( schema.paths[0].type.type.cast ).to.be.a( 'function' );
+      expect( schema.paths[0].pathType.valueType.cast ).to.be.a( 'function' );
       expect( schema.paths[1].name ).to.equal( 'bar' );
-      expect( schema.paths[1].type.type.cast ).to.be.a( 'function' );
+      expect( schema.paths[1].pathType.valueType.cast ).to.be.a( 'function' );
     });
 
     it( 'should parse empty arrays as collections of objects', function() {
       var schema = parser.schemaFromNode( [] );
-      expect( schema.type ).to.be.instanceof( orm.CollectionSchema );
-      expect( schema.type.type.type.cast ).to.equal( orm.Type.any );
+      expect( schema.valueType ).to.be.instanceof( orm.CollectionSchema );
+      expect( schema.valueType.collectionType.valueType.cast ).to.equal( orm.Type.any );
     });
 
     it( 'should parse nested objects', function() {
@@ -35,9 +35,9 @@ describe( 'SchemaParser', function() {
       });
       expect( schema.paths.length ).to.equal( 2 );
       expect( schema.paths[0].name ).to.equal( 'foo.bar' );
-      expect( schema.paths[0].type.type.cast ).to.be.a( 'function' );
+      expect( schema.paths[0].pathType.valueType.cast ).to.be.a( 'function' );
       expect( schema.paths[1].name ).to.equal( 'foo.baz' );
-      expect( schema.paths[1].type.type.cast ).to.be.a( 'function' );
+      expect( schema.paths[1].pathType.valueType.cast ).to.be.a( 'function' );
     });
 
     it( 'should parse nested arrays as collections of collections', function() {
@@ -47,9 +47,9 @@ describe( 'SchemaParser', function() {
       expect( schema.paths.length ).to.equal( 1 );
       var foo = schema.paths[0];
       expect( foo.name ).to.equal( 'foo' );
-      expect( foo.type.type ).to.be.instanceof( orm.CollectionSchema );
-      expect( foo.type.type.type.type ).to.be.instanceof( orm.CollectionSchema );
-      expect( foo.type.type.type.type.type.type.cast ).to.be.a( 'function' );
+      expect( foo.pathType.valueType ).to.be.instanceof( orm.CollectionSchema );
+      expect( foo.pathType.valueType.collectionType.valueType ).to.be.instanceof( orm.CollectionSchema );
+      expect( foo.pathType.valueType.collectionType.valueType.collectionType.valueType.cast ).to.be.a( 'function' );
     });
 
     it( 'should parse null or undefined as an object', function() {
@@ -99,7 +99,7 @@ describe( 'SchemaParser', function() {
           }]
         ])
       });
-      expect( schema.paths[0].type.type.attrs.nullable ).to.equal( true );
+      expect( schema.paths[0].pathType.valueType.attrs.nullable ).to.equal( true );
       var obj = schema.cast();
       expect( obj ).to.eql({
         foo: null

@@ -36,7 +36,7 @@ export default class ModelDecorator {
     var collection = this.collectionFactory(
       model,
       path.name,
-      path.type.type.type.type
+      path.pathType.valueType.collectionType.valueType
     );
     Path( path.name ).override( model, {
       get: function() {
@@ -54,14 +54,14 @@ export default class ModelDecorator {
       initialize: false,
       persist: true,
       get: function() {
-        return path.type.cast( inspector.viewForModel( model ).get( path.name ), {
+        return path.pathType.cast( inspector.viewForModel( model ).get( path.name ), {
           parent: model
         });
       },
       set: function( value ) {
         inspector.viewForModel( model ).set(
           path.name,
-          path.type.cast( value, {
+          path.pathType.cast( value, {
             parent: model
           })
         );
