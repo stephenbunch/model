@@ -18,8 +18,8 @@ function isCollectionPath( path ) {
 
 const collectionFactory = factoryFromClass( ModelCollection );
 
-const parser = new SchemaParser();
-parser.typeMatchers.push( function( node ) {
+const schemaParser = new SchemaParser();
+schemaParser.typeMatchers.push( function( node ) {
   return (
     node === Model ||
     node && node.prototype instanceof Model
@@ -35,10 +35,11 @@ export default class Model {
   static attrs = {}
 
   static collectionFactory = collectionFactory
+  static schemaParser = schemaParser
 
   static get schema() {
     if ( !this[ _schema ] ) {
-      this[ _schema ] = parser.schemaFromNode( this.attrs || {} );
+      this[ _schema ] = this.schemaParser.schemaFromNode( this.attrs || {} );
     }
     return this[ _schema ];
   }

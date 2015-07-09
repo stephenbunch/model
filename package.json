@@ -1,7 +1,7 @@
 {
   "name": "@stephenbunch/orm",
-  "version": "0.5.2",
-  "description": "A place to put ORM stuff.",
+  "version": "0.5.3",
+  "description": "An library for building custom ORMs.",
   "main": "index.js",
   "scripts": {
     "prepublish": "gulp"
