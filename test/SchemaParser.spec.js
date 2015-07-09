@@ -72,4 +72,17 @@ describe( 'SchemaParser', function() {
       });
     });
   });
+
+  describe( '.clone()', function() {
+    it( 'should make a copy of the parser', function() {
+      var parser1 = new orm.SchemaParser();
+      parser1.typeResolvers.set( String, Number );
+      var parser2 = parser1.clone();
+      parser2.typeResolvers.set( String, Boolean );
+      var schema1 = parser1.schemaFromNode( String );
+      var schema2 = parser2.schemaFromNode( String );
+      expect( schema1.cast( '123' ) ).to.equal( 123 );
+      expect( schema2.cast( '123' ) ).to.equal( true );
+    });
+  });
 });

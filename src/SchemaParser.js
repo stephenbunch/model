@@ -14,9 +14,7 @@ export default class SchemaParser {
     this.pathFactory = factoryFromClass( SchemaPath );
 
     this.typeMatchers = [];
-    this.typeMatchers.push( function( node ) {
-      return node instanceof ObjectSchema;
-    });
+    this.typeMatchers.push( node => node instanceof ObjectSchema );
 
     this.typeResolvers = new Map();
     this.typeResolvers.set( null, Type.any );
@@ -35,6 +33,20 @@ export default class SchemaParser {
     } else {
       return this.objectFactory( this._pathsFromNode( '', node ) );
     }
+  }
+
+  clone() {
+    var parser = new SchemaParser();
+    parser.objectFactory = this.objectFactory;
+    parser.collectionFactory = this.collectionFactory;
+    parser.valueFactory = this.valueFactory;
+    parser.pathFactory = this.pathFactory;
+    parser.typeMatchers = this.typeMatchers.slice();
+    console.log( this.typeResolvers[ Symbol.iterator ] );
+    for ( let [ key, value ] of this.typeResolvers ) {
+      parser.typeResolvers.set( key, value );
+    }
+    return parser;
   }
 
   /**
