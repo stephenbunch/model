@@ -42,7 +42,6 @@ export default class SchemaParser {
     parser.valueFactory = this.valueFactory;
     parser.pathFactory = this.pathFactory;
     parser.typeMatchers = this.typeMatchers.slice();
-    console.log( this.typeResolvers[ Symbol.iterator ] );
     for ( let [ key, value ] of this.typeResolvers ) {
       parser.typeResolvers.set( key, value );
     }
