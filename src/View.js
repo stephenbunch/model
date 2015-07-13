@@ -1,5 +1,5 @@
 import Path from '@stephenbunch/path';
-import { merge, cloneDeep } from './util';
+import { merge } from './util';
 
 /**
  * @name AbstractView.get
@@ -107,7 +107,7 @@ export default class View {
    */
   toJSON() {
     return merge(
-      cloneDeep( this._local.value ),
+      JSON.parse( JSON.stringify( this._local.value ) ),
       this._view && this._view.toJSON() || {}
     );
   }

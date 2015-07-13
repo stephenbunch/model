@@ -1,36 +1,3 @@
-export function cloneDeep( object ) {
-
-  function cloneValue( value ) {
-    if ( typeof value === 'object' && value !== null ) {
-      if ( typeOf( object ) === 'array' ) {
-        return cloneArray( array );
-      }
-      return cloneObject( value );
-    }
-    return value;
-  }
-
-  function cloneObject( object ) {
-    return Object.keys( object ).map( function( key ) {
-      return {
-        key: key,
-        value: cloneValue( object[ key ] )
-      };
-    }).reduce( function( obj, item ) {
-      obj[ item.key ] = item.value;
-      return obj;
-    }, {} );
-  }
-
-  function cloneArray( array ) {
-    return array.map( function( item ) {
-      return cloneValue( item );
-    });
-  }
-
-  return cloneValue( object );
-}
-
 /**
  * Merges the remaining parameters into the first parameter.
  * @param {Object|Array} object The destination object.

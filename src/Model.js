@@ -1,5 +1,5 @@
 import View from './View';
-import { cloneDeep, factoryFromClass } from './util';
+import { factoryFromClass } from './util';
 import ModelDecorator from './ModelDecorator';
 import CollectionSchema from './CollectionSchema';
 import ModelCollection from './ModelCollection';

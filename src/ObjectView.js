@@ -1,5 +1,4 @@
 import Path from '@stephenbunch/path';
-import { cloneDeep } from './util';
 
 export default class ObjectView {
   constructor( object ) {
@@ -29,6 +28,6 @@ export default class ObjectView {
   }
 
   toJSON() {
-    return cloneDeep( this._object.value );
+    return JSON.parse( JSON.stringify( this._object.value ) );
   }
 };

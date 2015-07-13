@@ -2,7 +2,7 @@ import ObjectSchema from './ObjectSchema';
 import CollectionSchema from './CollectionSchema';
 import ValueSchema from './ValueSchema';
 import SchemaPath from './SchemaPath';
-import { cloneDeep, typeOf, factoryFromClass } from './util';
+import { typeOf, factoryFromClass } from './util';
 import Type from './Type';
 import Symbol from './Symbol';
 

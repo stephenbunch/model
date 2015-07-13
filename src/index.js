@@ -10,7 +10,6 @@ import SchemaPath from './SchemaPath';
 import Symbol from './Symbol';
 import Type from './Type';
 import {
-  cloneDeep,
   factoryFromClass,
   merge
 } from './util';
@@ -30,7 +29,6 @@ export default {
   Symbol,
   Type,
   util: {
-    cloneDeep,
     factoryFromClass,
     merge
   },
