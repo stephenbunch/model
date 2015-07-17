@@ -2,6 +2,7 @@ import Model from './Model';
 import ModelCollection from './ModelCollection';
 import ModelDecorator from './ModelDecorator';
 import ModelSchema from './ModelSchema';
+import ObjectView from './ObjectView';
 import SchemaParser from './SchemaParser';
 import View from './View';
 import { factoryFromClass } from './util';
@@ -15,7 +16,13 @@ export default class ModelSchemaFactory {
       }
     });
     this.modelCollectionFactory = factoryFromClass( ModelCollection );
-    this.viewFactory = factoryFromClass( View );
+    this.viewFactory = value => {
+      if ( value instanceof View ) {
+        return value;
+      } else {
+        return new View( new ObjectView( value || {} ) );
+      }
+    };
   }
 
   /**

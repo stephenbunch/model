@@ -36,3 +36,9 @@
  * @property {AbstractView.merge} merge
  * @property {AbstractView.toJSON} toJSON
  */
+
+/**
+ * @typedef {Object} ModelSchemaCastOptions
+ * @property {Model|null} parent
+ * @property {ModelCollection|null} parentCollection
+ */

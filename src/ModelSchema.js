@@ -1,6 +1,4 @@
-import ObjectView from './ObjectView';
 import ModelEditor from './ModelEditor';
-import View from './View';
 
 export default class ModelSchema {
   /**
@@ -17,8 +15,8 @@ export default class ModelSchema {
 
   /**
    * Casts an existing value to a new model instance.
-   * @param {View|Model|Object|null} [value]
-   * @param {Object} [options]
+   * @param {*} [value]
+   * @param {ModelSchemaCastOptions} [options]
    * @returns {Model}
    */
   cast( value, options ) {
@@ -26,15 +24,7 @@ export default class ModelSchema {
       return value;
     }
     var model = Object.create( this._class.prototype );
-    if ( value === undefined || value === null ) {
-      value = {};
-    }
-    var view;
-    if ( value instanceof View ) {
-      view = value;
-    } else {
-      view = this._viewFactory( new ObjectView( value ) );
-    }
+    var view = this._viewFactory( value );
     this._editor.inspector.setViewForModel( model, view );
     this._editor.inspector.setSchemaForModel( model, this );
     options = options || {};
