@@ -1,4 +1,10 @@
+/**
+ * @implements {Schema}
+ */
 export default class ObjectSchema {
+  /**
+   * @param {Array.<SchemaPath>} paths
+   */
   constructor( paths ) {
     this.paths = paths;
   }
@@ -12,4 +18,4 @@ export default class ObjectSchema {
       return object;
     }, {} );
   }
-}
+};

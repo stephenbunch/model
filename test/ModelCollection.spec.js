@@ -1,5 +1,8 @@
 import orm from '../src';
 
+const schemaFactory = new orm.ModelSchemaFactory();
+const schemaFromClass = schemaFactory.schemaFromClass.bind( schemaFactory );
+
 describe( 'ModelCollection', function() {
   it( 'should be iterable', function() {
     class Tree extends orm.Model {
@@ -14,7 +17,8 @@ describe( 'ModelCollection', function() {
       }
     }
 
-    var orchard = new Orchard();
+    var schema = schemaFromClass( Orchard );
+    var orchard = schema.cast();
     orchard.trees.push( orchard.trees.create({ leaves: 2 }) );
     orchard.trees.push( orchard.trees.create({ leaves: 5 }) );
 

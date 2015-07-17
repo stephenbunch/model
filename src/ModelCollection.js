@@ -94,8 +94,8 @@ export default class ModelCollection {
 
   indexOf( item ) {
     item = this[ _cast ]( item );
-    var index = findIndex( this.toArray(), function( model ) {
-      return model.equals( item );
+    var index = findIndex( this.toArray(), model => {
+      return this[ _schema ].keyForEntity( model ) === this[ _schema ].keyForEntity( item );
     });
     return index;
   }

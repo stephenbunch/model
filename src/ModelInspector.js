@@ -1,29 +1,38 @@
-const viewKey = Symbol();
-const parentKey = Symbol();
-const parentCollectionKey = Symbol();
+const _view = Symbol();
+const _parent = Symbol();
+const _parentCollection = Symbol();
+const _schema = Symbol();
 
 export default class ModelInspector {
   viewForModel( model ) {
-    return model[ viewKey ];
+    return model[ _view ];
   }
 
   setViewForModel( model, view ) {
-    model[ viewKey ] = view;
+    model[ _view ] = view;
   }
 
   parentOfModel( model ) {
-    return model[ parentKey ];
+    return model[ _parent ];
   }
 
   setParentOfModel( model, parent ) {
-    model[ parentKey ] = parent;
+    model[ _parent ] = parent;
   }
 
   parentCollectionOfModel( model ) {
-    return model[ parentCollectionKey ];
+    return model[ _parentCollection ];
   }
 
   setParentCollectionOfModel( model, parentCollection ) {
-    model[ parentCollectionKey ] = parentCollection;
+    model[ _parentCollection ] = parentCollection;
+  }
+
+  schemaForModel( model ) {
+    return model[ _schema ];
+  }
+
+  setSchemaForModel( model, schema ) {
+    model[ _schema ] = schema;
   }
 };

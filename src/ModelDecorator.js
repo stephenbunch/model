@@ -1,26 +1,25 @@
-import Path from '@stephenbunch/path';
+import CollectionSchema from './CollectionSchema';
 import ModelInspector from './ModelInspector';
-
-var inspector = new ModelInspector();
+import ModelSchema from './ModelSchema';
+import Path from '@stephenbunch/path';
 
 export default class ModelDecorator {
   /**
    * @param {Array.<SchemaPath>} paths
    * @param {Function} collectionFactory
-   * @param {Function} collectionMatcher
    */
-  constructor( paths, collectionFactory, collectionMatcher ) {
-    this.paths = paths;
-    this.collectionFactory = collectionFactory;
-    this.collectionMatcher = collectionMatcher;
+  constructor( paths, collectionFactory ) {
+    this._paths = paths;
+    this._collectionFactory = collectionFactory;
+    this._inspector = new ModelInspector();
   }
 
   /**
    * @param {Model} model
    */
   decorate( model ) {
-    this.paths.forEach( path => {
-      if ( this.collectionMatcher( path ) ) {
+    this._paths.forEach( path => {
+      if ( this._isCollectionPath( path ) ) {
         this._addCollectionPath( model, path );
       } else {
         this._addAttributePath( model, path );
@@ -29,17 +28,28 @@ export default class ModelDecorator {
   }
 
   /**
+   * @param {SchemaPath} path
+   * @returns {Boolean}
+   */
+  _isCollectionPath( path ) {
+    return (
+      path.pathType.valueType instanceof CollectionSchema &&
+      path.pathType.valueType.collectionType.valueType instanceof ModelSchema
+    );
+  }
+
+  /**
    * @param {Model} model
    * @param {SchemaPath} path
    */
   _addCollectionPath( model, path ) {
-    var collection = this.collectionFactory(
+    var collection = this._collectionFactory(
       model,
       path.name,
       path.pathType.valueType.collectionType.valueType
     );
     Path( path.name ).override( model, {
-      get: function() {
+      get: () => {
         return collection;
       }
     });
@@ -53,13 +63,13 @@ export default class ModelDecorator {
     Path( path.name ).override( model, {
       initialize: false,
       persist: true,
-      get: function() {
-        return path.pathType.cast( inspector.viewForModel( model ).get( path.name ), {
+      get: () => {
+        return path.pathType.cast( this._inspector.viewForModel( model ).get( path.name ), {
           parent: model
         });
       },
-      set: function( value ) {
-        inspector.viewForModel( model ).set(
+      set: value => {
+        this._inspector.viewForModel( model ).set(
           path.name,
           path.pathType.cast( value, {
             parent: model

@@ -17,7 +17,8 @@ export default class ModelEditor {
    * @returns {Model}
    */
   edit( model ) {
-    return model.constructor.cast( this.inspector.viewForModel( model ).fork(), {
+    var fork = this.inspector.viewForModel( model ).fork();
+    return this.inspector.schemaForModel( model ).cast( fork, {
       parent: this.inspector.parentOfModel( model ),
       parentCollection: this.inspector.parentCollectionOfModel( model )
     });

@@ -13,13 +13,12 @@ export default class SchemaParser {
     this.valueFactory = factoryFromClass( ValueSchema );
     this.pathFactory = factoryFromClass( SchemaPath );
 
-    this.typeMatchers = [];
-    this.typeMatchers.push( node => node instanceof ObjectSchema );
-
     this.typeResolvers = new Map();
     this.typeResolvers.set( null, Type.any );
     this.typeResolvers.set( String, Type.string );
     this.typeResolvers.set( Number, Type.number );
+
+    this.nodeResolvers = [];
   }
 
   /**
@@ -41,10 +40,10 @@ export default class SchemaParser {
     parser.collectionFactory = this.collectionFactory;
     parser.valueFactory = this.valueFactory;
     parser.pathFactory = this.pathFactory;
-    parser.typeMatchers = this.typeMatchers.slice();
     for ( let [ key, value ] of this.typeResolvers ) {
       parser.typeResolvers.set( key, value );
     }
+    parser.nodeResolvers = parser.nodeResolvers.slice();
     return parser;
   }
 
@@ -82,6 +81,13 @@ export default class SchemaParser {
       }
       node = this.typeResolvers.get( node );
     }
+    for ( let resolver of this.nodeResolvers ) {
+      let resolution = resolver( node );
+      if ( resolution !== undefined ) {
+        node = resolution;
+        break;
+      }
+    }
     return node;
   }
 
@@ -90,13 +96,11 @@ export default class SchemaParser {
    * @returns {Boolean}
    */
   _isTypeNode( node ) {
-    var result = typeof node === 'function' || typeOf( node ) === 'array';
-    if ( !result ) {
-      for ( var i = 0, len = this.typeMatchers.length; i < len && !result; i++ ) {
-        result = this.typeMatchers[ i ]( node );
-      }
-    }
-    return result;
+    return (
+      typeof node === 'function' ||
+      Array.isArray( node ) ||
+      node && typeof node.cast === 'function'
+    );
   }
 
   _typeFromNode( node ) {
@@ -112,7 +116,7 @@ export default class SchemaParser {
    * @returns {Boolean}
    */
   _isCollectionType( value ) {
-    return value === Array || typeOf( value ) === 'array';
+    return value === Array || Array.isArray( value );
   }
 
   /**
@@ -146,7 +150,7 @@ export default class SchemaParser {
   }
 
   _collectionFromNode( node ) {
-    if ( typeOf( node ) === 'array' && node.length > 0 ) {
+    if ( Array.isArray( node ) && node.length > 0 ) {
       return this.collectionFactory( this.schemaFromNode( node[0] ) );
     } else {
       return this.collectionFactory( this.valueFactory( Type.any ) );

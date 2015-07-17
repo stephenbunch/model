@@ -58,19 +58,6 @@ export function merge( object, other ) {
 };
 
 /**
- * Gets the internal JavaScript [[Class]] of an object.
- * http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray
- *
- * @private
- * @param {*} value
- * @returns {String}
- */
-export function typeOf( value ) {
-  return Object.prototype.toString.call( value )
-    .match( /^\[object\s(.*)\]$/ )[1].toLowerCase();
-};
-
-/**
  * Gets the index of the first match or -1 if no matches are found.
  * @param {Array} array
  * @param {Function} matcher A matching function that returns true or false.
@@ -112,19 +99,4 @@ export function factoryFromClass( Class ) {
     Class.prototype.constructor.apply( instance, arguments );
     return instance;
   };
-};
-
-/**
- * @param {Function} child The child class.
- * @param {Function} parent The parent class.
- * @returns {Function} The child class.
- */
-export function inherits( child, parent ) {
-  var proto = child.prototype;
-  child.prototype = Object.create( parent.prototype );
-  var parentProps = Object.getOwnPropertyNames( parent.prototype );
-  Object.getOwnPropertyNames( proto ).forEach( function( prop ) {
-    Object.defineProperty( child.prototype, prop, Object.getOwnPropertyDescriptor( proto, prop ) );
-  });
-  return child;
 };

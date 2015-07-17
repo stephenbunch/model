@@ -1,6 +1,10 @@
-import { typeOf } from './util';
-
+/**
+ * @implements {Schema}
+ */
 export default class CollectionSchema {
+  /**
+   * @param {Schema} type
+   */
   constructor( type ) {
     this.collectionType = type;
   }
@@ -9,7 +13,7 @@ export default class CollectionSchema {
     if ( value === undefined ) {
       value = null;
     }
-    if ( typeOf( value ) === 'array' ) {
+    if ( Array.isArray( value ) ) {
       return value.map( item => {
         return this.collectionType.cast( item, options );
       });

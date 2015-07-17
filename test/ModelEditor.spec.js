@@ -1,5 +1,8 @@
 import orm from '../src';
 
+const schemaFactory = new orm.ModelSchemaFactory();
+const schemaFromClass = schemaFactory.schemaFromClass.bind( schemaFactory );
+
 describe( 'ModelEditor', function() {
   describe( '.edit()', function() {
     it( 'should return a fork', function() {
@@ -9,7 +12,8 @@ describe( 'ModelEditor', function() {
         }
       }
       var editor = new orm.ModelEditor();
-      var main = new Foo();
+      var schema = schemaFromClass( Foo );
+      var main = schema.cast();
       var edit = editor.edit( main );
       main.bar = 2;
       expect( main.bar ).to.equal( 2 );
@@ -33,7 +37,8 @@ describe( 'ModelEditor', function() {
         }
       }
       var editor = new orm.ModelEditor();
-      var main = new Orchard();
+      var schema = schemaFromClass( Orchard );
+      var main = schema.cast();
       var edit = editor.edit( main );
 
       // No changes have been made to 'edit', so when we add an item to main

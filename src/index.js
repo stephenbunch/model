@@ -3,6 +3,8 @@ import Model from './Model';
 import ModelCollection from './ModelCollection';
 import ModelDecorator from './ModelDecorator';
 import ModelEditor from './ModelEditor';
+import ModelSchema from './ModelSchema';
+import ModelSchemaFactory from './ModelSchemaFactory';
 import ModelInspector from './ModelInspector';
 import ObjectSchema from './ObjectSchema';
 import SchemaParser from './SchemaParser';
@@ -23,6 +25,8 @@ export default {
   ModelDecorator,
   ModelEditor,
   ModelInspector,
+  ModelSchema,
+  ModelSchemaFactory,
   ObjectSchema,
   SchemaParser,
   SchemaPath,

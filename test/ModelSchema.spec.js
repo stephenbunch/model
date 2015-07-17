@@ -1,30 +1,21 @@
 import orm from '../src';
 
-describe( 'Model', function() {
-  describe( 'Class', function() {
-    it( 'can be extended', function() {
-      class Foo extends orm.Model {
-        static attrs = {
-          bar: Number
-        }
-        baz() {
-          return this.bar;
-        }
-      }
-      var foo = new Foo();
-      expect( foo ).to.be.instanceof( Foo );
-      expect( foo.baz() ).to.equal( 0 );
-    });
+const schemaFactory = new orm.ModelSchemaFactory();
+const schemaFromClass = schemaFactory.schemaFromClass.bind( schemaFactory );
 
+describe( 'ModelSchema', function() {
+  describe( '.cast( value )', function() {
     it( 'should cast members as the specified type', function() {
       class Foo extends orm.Model {
         static attrs = {
           bar: Number
         }
       }
-      var foo = new Foo();
+      var schema = schemaFromClass( Foo );
+      var foo = schema.cast();
       foo.bar = '3';
       expect( foo.bar ).to.equal( 3 );
+      expect( foo ).to.be.instanceof( Foo );
     });
 
     it( 'should treat arrays as collections', function() {
@@ -39,7 +30,9 @@ describe( 'Model', function() {
           trees: [ Tree ]
         }
       }
-      var orchard = new Orchard();
+
+      var schema = schemaFromClass( Orchard );
+      var orchard = schema.cast();
       expect( orchard.trees ).to.be.instanceof( orm.ModelCollection );
       var tree = orchard.trees.create();
       expect( tree ).to.be.instanceof( Tree );
@@ -58,7 +51,8 @@ describe( 'Model', function() {
         }
       }
 
-      var foo = new Foo();
+      var schema = schemaFromClass( Foo );
+      var foo = schema.cast();
       expect( foo.bar.baz ).to.equal( 0 );
       expect( foo.bar.qux ).to.eql( [] );
       foo.bar = {
@@ -76,16 +70,15 @@ describe( 'Model', function() {
         }
       }
 
-      var foo = new Foo();
+      var schema = schemaFromClass( Foo );
+      var foo = schema.cast();
       expect( foo.bar ).to.equal( null );
       foo.bar = {};
       expect( foo.bar.baz ).to.equal( 0 );
       foo.bar = null;
       expect( foo.bar ).to.equal( null );
     });
-  });
 
-  describe( '::cast( value )', function() {
     it( 'should wrap the object rather than making a copy', function() {
       var obj = { bar: 2 };
 
@@ -95,23 +88,12 @@ describe( 'Model', function() {
         }
       }
 
-      var foo = Foo.cast( obj );
+      var schema = schemaFromClass( Foo );
+      var foo = schema.cast( obj );
       expect( foo.bar ).to.equal( 2 );
 
       obj.bar = 3;
       expect( foo.bar ).to.equal( 3 );
-    });
-  });
-
-  describe( '::create()', function() {
-    it( 'should behave the same way as the `new` operator', function() {
-      class Foo extends orm.Model {
-        static attrs = {
-          bar: Number
-        }
-      };
-      var foo = Foo.create();
-      expect( foo.bar ).to.equal( 0 );
     });
   });
 });

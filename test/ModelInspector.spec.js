@@ -1,5 +1,8 @@
 import orm from '../src';
 
+const schemaFactory = new orm.ModelSchemaFactory();
+const schemaFromClass = schemaFactory.schemaFromClass.bind( schemaFactory );
+
 describe( 'ModelInspector', function() {
   describe( '.parentOfModel( model )', function() {
     it( 'should return the parent model', function() {
@@ -15,7 +18,8 @@ describe( 'ModelInspector', function() {
         }
       }
       var inspector = new orm.ModelInspector();
-      var bar = new Bar();
+      var schema = schemaFromClass( Bar );
+      var bar = schema.cast();
       expect( inspector.parentOfModel( bar.foo ) ).to.equal( bar );
     });
 
@@ -27,7 +31,8 @@ describe( 'ModelInspector', function() {
         }
       }
       var inspector = new orm.ModelInspector();
-      var bar = new Bar();
+      var schema = schemaFromClass( Bar );
+      var bar = schema.cast();
       bar.foos.push( bar.foos.create() );
       expect( inspector.parentOfModel( bar.foos.get( 0 ) ) ).to.equal( bar );
     });
@@ -42,7 +47,8 @@ describe( 'ModelInspector', function() {
         }
       }
       var inspector = new orm.ModelInspector();
-      var bar = new Bar();
+      var schema = schemaFromClass( Bar );
+      var bar = schema.cast();
       bar.foos.push( bar.foos.create() );
       expect( inspector.parentCollectionOfModel( bar.foos.get( 0 ) ) ).to.equal( bar.foos );
     });
