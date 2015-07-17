@@ -41,14 +41,14 @@ describe( 'ModelEditor', function() {
       var main = schema.cast();
       var edit = editor.edit( main );
 
-      // No changes have been made to 'edit', so when we add an item to main
+      // No changes have been made to 'edit', so when we add an item to the main
       // collection, the change is seen in both versions.
       main.trees.push( main.trees.create({ id: 1 }) );
       expect( main.trees.size ).to.equal( 1 );
       expect( edit.trees.size ).to.equal( 1 );
 
-      // When we modify the collection in 'edit', the change only doesn't
-      // appear in 'main'.
+      // When we modify the collection in 'edit', the change doesn't appear in
+      // 'main'.
       edit.trees.push( edit.trees.create({ id: 2 }) );
       expect( edit.trees.size ).to.equal( 2 );
       expect( main.trees.size ).to.equal( 1 );

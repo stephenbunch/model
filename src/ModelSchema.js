@@ -6,11 +6,13 @@ export default class ModelSchema {
   /**
    * @param {Function} ModelClass
    * @param {ModelDecorator} decorator
+   * @param {function(): View} viewFactory
    */
-  constructor( ModelClass, decorator ) {
+  constructor( ModelClass, decorator, viewFactory ) {
     this._class = ModelClass;
     this._decorator = decorator;
     this._editor = new ModelEditor();
+    this._viewFactory = viewFactory;
   }
 
   /**
@@ -31,7 +33,7 @@ export default class ModelSchema {
     if ( value instanceof View ) {
       view = value;
     } else {
-      view = new View( new ObjectView( value ) );
+      view = this._viewFactory( new ObjectView( value ) );
     }
     this._editor.inspector.setViewForModel( model, view );
     this._editor.inspector.setSchemaForModel( model, this );

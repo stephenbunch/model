@@ -1,7 +1,7 @@
-const _view = Symbol();
-const _parent = Symbol();
-const _parentCollection = Symbol();
-const _schema = Symbol();
+const _view = Symbol( '_view' );
+const _parent = Symbol( '_parent' );
+const _parentCollection = Symbol( '_parentCollection' );
+const _schema = Symbol( '_schema' );
 
 export default class ModelInspector {
   viewForModel( model ) {

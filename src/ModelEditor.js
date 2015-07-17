@@ -28,6 +28,6 @@ export default class ModelEditor {
    * @param {Model} model
    */
   reset( model ) {
-    this.inspector.viewForModel( model ).reset();
+    this.inspector.viewForModel( model ).replace( {} );
   }
 };

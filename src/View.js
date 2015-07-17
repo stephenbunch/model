@@ -1,40 +1,16 @@
 import Path from '@stephenbunch/path';
 import { merge } from './util';
 
-/**
- * @name AbstractView.get
- * @function
- * @param {String} path
- * @returns {*}
- */
-
-/**
- * @name AbstractView.merge
- * @function
- * @param {Object} object
- */
-
-/**
- * @name AbstractView.toJSON
- * @function
- * @returns {Object}
- */
-
-/**
- * @typedef {Object} AbstractView
- * @property {AbstractView.get} get
- * @property {AbstractView.merge} merge
- * @property {AbstractView.toJSON} toJSON
- */
+const _view = Symbol( '_view' );
+const _local = Symbol( '_local' );
 
 export default class View {
   /**
    * @param {AbstractView} view
    */
   constructor( view ) {
-    this._view = view;
-    this._local = {};
-    this.reset();
+    this[ _view ] = view;
+    this[ _local ] = {};
   }
 
   /**
@@ -42,9 +18,9 @@ export default class View {
    * @returns {*}
    */
   get( path ) {
-    var value = Path( path ).get( this._local.value );
-    if ( value === undefined && this._view ) {
-      return this._view.get( path );
+    var value = Path( path ).get( this[ _local ] );
+    if ( value === undefined && this[ _view ] ) {
+      return this[ _view ].get( path );
     } else {
       return value;
     }
@@ -55,35 +31,32 @@ export default class View {
    * @param {*} value
    */
   set( path, value ) {
-    Path( path ).set( this._local.value, value );
-  }
-
-  reset() {
-    // We'll store the actual value as a sub-property so that observers can
-    // listen for changes even if the entire object gets replaced.
-    this._local.value = {};
+    Path( path ).set( this[ _local ], value );
   }
 
   /**
    * @param {Object} object
    */
   merge( object ) {
-    merge( this._local.value, object );
+    merge( this[ _local ], object );
   }
 
   /**
    * @param {Object} object
    */
   replace( object ) {
-    this._local.value = object || {};
+    if ( !object || Object.getPrototypeOf( object ) !== Object.prototype ) {
+      throw new Error( 'Object must be a plain object.' );
+    }
+    this[ _local ] = object;
   }
 
   commit() {
-    if ( !this._view ) {
-      throw new Error( 'No subview to commit to!' );
+    if ( !this[ _view ] ) {
+      throw new Error( 'No parent view to commit to!' );
     }
-    this._view.merge( this._local.value );
-    this.reset();
+    this[ _view ].merge( this[ _local ] );
+    this.replace( {} );
   }
 
   /**
@@ -91,8 +64,8 @@ export default class View {
    */
   toJSON() {
     return merge(
-      JSON.parse( JSON.stringify( this._local.value ) ),
-      this._view && this._view.toJSON() || {}
+      JSON.parse( JSON.stringify( this[ _local ] ) ),
+      this[ _view ] && this[ _view ].toJSON() || {}
     );
   }
 
@@ -100,6 +73,6 @@ export default class View {
    * @returns {View}
    */
   fork() {
-    return new View( this );
+    return new this.constructor( this );
   }
 }

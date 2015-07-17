@@ -3,6 +3,7 @@ import ModelCollection from './ModelCollection';
 import ModelDecorator from './ModelDecorator';
 import ModelSchema from './ModelSchema';
 import SchemaParser from './SchemaParser';
+import View from './View';
 import { factoryFromClass } from './util';
 
 export default class ModelSchemaFactory {
@@ -14,6 +15,7 @@ export default class ModelSchemaFactory {
       }
     });
     this.modelCollectionFactory = factoryFromClass( ModelCollection );
+    this.viewFactory = factoryFromClass( View );
   }
 
   /**
@@ -23,6 +25,6 @@ export default class ModelSchemaFactory {
   schemaFromClass( ModelClass ) {
     var schema = this.schemaParser.schemaFromNode( ModelClass.attrs || {} );
     var decorator = new ModelDecorator( schema.paths, this.modelCollectionFactory );
-    return new ModelSchema( ModelClass, decorator );
+    return new ModelSchema( ModelClass, decorator, this.viewFactory );
   }
 };

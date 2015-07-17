@@ -43,8 +43,12 @@ export function merge( object, other ) {
       return;
     }
     if (
-      typeof aValue === 'object' && aValue !== null &&
-      typeof bValue === 'object' && bValue !== null
+      aValue && bValue && (
+        Object.getPrototypeOf( aValue ) === Object.prototype &&
+        Object.getPrototypeOf( bValue ) === Object.prototype
+        ||
+        Array.isArray( aValue ) && Array.isArray( bValue )
+      )
     ) {
       stack.push({
         dest: aValue,

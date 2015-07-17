@@ -1,15 +1,15 @@
 import { findIndex } from './util';
 import ModelInspector from './ModelInspector';
 
-const _parent = Symbol();
-const _key = Symbol();
-const _schema = Symbol();
-const _parentInspector = Symbol();
-const _childInspector = Symbol();
-const _view = Symbol();
-const _items = Symbol();
-const _cast = Symbol();
-const _update = Symbol();
+const _parent = Symbol( '_parent' );
+const _key = Symbol( '_key' );
+const _schema = Symbol( '_schema' );
+const _parentInspector = Symbol( '_parentInspector' );
+const _childInspector = Symbol( '_childInspector' );
+const _view = Symbol( '_view' );
+const _items = Symbol( '_items' );
+const _cast = Symbol( '_cast' );
+const _update = Symbol( '_update' );
 
 export default class ModelCollection {
   /**
