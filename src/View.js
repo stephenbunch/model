@@ -21,26 +21,10 @@ import { merge } from './util';
  */
 
 /**
- * @name AbstractView.watch
- * @function
- * @param {String} path
- * @param {Function} listener
- */
-
-/**
- * @name AbstractView.unwatch
- * @function
- * @param {String} path
- * @param {Function} listener
- */
-
-/**
  * @typedef {Object} AbstractView
  * @property {AbstractView.get} get
  * @property {AbstractView.merge} merge
  * @property {AbstractView.toJSON} toJSON
- * @property {AbstractView.watch} watch
- * @property {AbstractView.unwatch} unwatch
  */
 
 export default class View {
@@ -117,27 +101,5 @@ export default class View {
    */
   fork() {
     return new View( this );
-  }
-
-  /**
-   * @param {String} path
-   * @param {Function} listener
-   */
-  watch( path, listener ) {
-    if ( this._view ) {
-      this._view.watch( path, listener );
-    }
-    Path( 'value.' + path ).watch( this._local, listener );
-  }
-
-  /**
-   * @param {String} path
-   * @param {Function} listener
-   */
-  unwatch( path, listener ) {
-    if ( this._view ) {
-      this._view.unwatch( path, listener );
-    }
-    Path( 'value.' + path ).unwatch( this._local, listener );
   }
 }

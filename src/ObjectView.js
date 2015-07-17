@@ -19,14 +19,6 @@ export default class ObjectView {
     orm.util.merge( this._object.value, object );
   }
 
-  watch( path, listener ) {
-    Path( 'value.' + path ).watch( this._object, listener );
-  }
-
-  unwatch( path, listener ) {
-    Path( 'value.' + path ).unwatch( this._object, listener );
-  }
-
   toJSON() {
     return JSON.parse( JSON.stringify( this._object.value ) );
   }
