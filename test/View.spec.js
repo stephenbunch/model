@@ -34,15 +34,13 @@ describe( 'View', function() {
   describe( '.toJSON()', function() {
     it( 'should return the merge result of the local value and the subview\'s toJSON value', function() {
       var subview = {
-        toJSON: sinon.stub().returns({ foo: 2 })
+        toJSON: sinon.stub().returns({ foo: 2, bar: 3 })
       };
       var view = new orm.View( subview );
-      view.set( 'bar.baz', 2 );
+      view.set( 'foo', 4 );
       expect( view.toJSON() ).to.eql({
-        foo: 2,
-        bar: {
-          baz: 2
-        }
+        foo: 4,
+        bar: 3
       });
     });
   });

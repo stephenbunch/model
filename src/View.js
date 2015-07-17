@@ -64,8 +64,8 @@ export default class View {
    */
   toJSON() {
     return merge(
-      JSON.parse( JSON.stringify( this[ _local ] ) ),
-      this[ _view ] && this[ _view ].toJSON() || {}
+      this[ _view ] && this[ _view ].toJSON() || {},
+      JSON.parse( JSON.stringify( this[ _local ] ) )
     );
   }
 
