@@ -38,6 +38,9 @@ export default class View {
    * @param {Object} object
    */
   merge( object ) {
+    if ( !object || Object.getPrototypeOf( object ) !== Object.prototype ) {
+      throw new Error( 'Object must be a plain object.' );
+    }
     merge( this[ _local ], object );
   }
 

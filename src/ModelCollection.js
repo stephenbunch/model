@@ -4,61 +4,51 @@ import ModelInspector from './ModelInspector';
 const _parent = Symbol( '_parent' );
 const _key = Symbol( '_key' );
 const _schema = Symbol( '_schema' );
-const _parentInspector = Symbol( '_parentInspector' );
-const _childInspector = Symbol( '_childInspector' );
+const _inspector = Symbol( '_inspector' );
 const _view = Symbol( '_view' );
-const _items = Symbol( '_items' );
 const _cast = Symbol( '_cast' );
 const _update = Symbol( '_update' );
+const _adapter = Symbol( '_adapter' );
 
 export default class ModelCollection {
   /**
    * @param {Model} parent
    * @param {String} key
    * @param {ModelSchema} schema
+   * @param {CollectionAdapter} adapter
    */
-  constructor( parent, key, schema ) {
+  constructor( parent, key, schema, adapter ) {
     this[ _parent ] = parent;
     this[ _key ] = key;
     this[ _schema ] = schema;
-
-    this[ _parentInspector ] = new ModelInspector();
-    this[ _childInspector ] = new ModelInspector();
+    this[ _adapter ] = adapter;
+    this[ _inspector ] = new ModelInspector();
   }
 
   get [ _view ]() {
-    return this[ _parentInspector ].viewForModel( this[ _parent ] );
-  }
-
-  get [ _items ]() {
-    return this[ _view ].get( this[ _key ] ) || [];
+    return this[ _inspector ].viewForModel( this[ _parent ] );
   }
 
   get size() {
-    return this[ _items ].length;
+    return this[ _adapter ].getSize( this[ _view ], this[ _key ] );
   }
 
   [ Symbol.iterator ]() {
-    var index = -1;
+    var iterator = this[ _adapter ].iterate( this[ _view ], this[ _key ] );
     return {
       next: () => {
-        index += 1;
-        if ( index < this.size ) {
-          return {
-            value: this.get( index ),
-            done: false
-          };
-        } else {
-          return {
-            done: true
-          };
+        var result = iterator.next();
+        if ( !result.done ) {
+          result.value = this[ _cast ]( result.value );
         }
+        return result;
       }
     };
   }
 
   get( index ) {
-    var item = this[ _items ][ index ];
+    var item = this[ _adapter ]
+      .valueAtIndex( this[ _view ], this[ _key ], index );
     return item && this[ _cast ]( item );
   }
 
@@ -95,13 +85,25 @@ export default class ModelCollection {
   indexOf( item ) {
     item = this[ _cast ]( item );
     var index = findIndex( this.toArray(), model => {
-      return this[ _schema ].keyForEntity( model ) === this[ _schema ].keyForEntity( item );
+      return (
+        this[ _schema ].keyForEntity( model ) ===
+        this[ _schema ].keyForEntity( item )
+      );
     });
     return index;
   }
 
   toArray() {
-    return this[ _items ].map( x => this[ _cast ]( x ) );
+    var array = [];
+    var iterator = this[ _adapter ].iterate( this[ _view ], this[ _key ] );
+    while ( true ) {
+      let item = iterator.next();
+      if ( item.done ) {
+        break;
+      }
+      array.push( this[ _cast ]( item.value ) );
+    }
+    return array;
   }
 
   toJSON() {
@@ -118,7 +120,7 @@ export default class ModelCollection {
   [ _update ]( map ) {
     var items = this.toArray();
     items = map( items ) || items;
-    items = items.map( x => this[ _childInspector ].viewForModel( x ) );
-    this[ _view ].set( this[ _key ], items );
+    items = items.map( x => this[ _inspector ].viewForModel( x ) );
+    this[ _adapter ].set( this[ _view ], this[ _key ], items );
   }
 };

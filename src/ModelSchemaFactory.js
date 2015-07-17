@@ -1,3 +1,4 @@
+import DefaultCollectionAdapter from './DefaultCollectionAdapter';
 import Model from './Model';
 import ModelCollection from './ModelCollection';
 import ModelDecorator from './ModelDecorator';
@@ -23,6 +24,7 @@ export default class ModelSchemaFactory {
         return new View( new ObjectView( value || {} ) );
       }
     };
+    this.collectionAdapter = new DefaultCollectionAdapter();
   }
 
   /**
@@ -31,7 +33,11 @@ export default class ModelSchemaFactory {
    */
   schemaFromClass( ModelClass ) {
     var schema = this.schemaParser.schemaFromNode( ModelClass.attrs || {} );
-    var decorator = new ModelDecorator( schema.paths, this.modelCollectionFactory );
+    var decorator = new ModelDecorator(
+      schema.paths,
+      this.modelCollectionFactory,
+      this.collectionAdapter
+    );
     return new ModelSchema( ModelClass, decorator, this.viewFactory );
   }
 };

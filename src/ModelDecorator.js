@@ -7,10 +7,12 @@ export default class ModelDecorator {
   /**
    * @param {Array.<SchemaPath>} paths
    * @param {Function} collectionFactory
+   * @param {CollectionAdapter} collectionAdapter
    */
-  constructor( paths, collectionFactory ) {
+  constructor( paths, collectionFactory, collectionAdapter ) {
     this._paths = paths;
     this._collectionFactory = collectionFactory;
+    this._collectionAdapter = collectionAdapter;
     this._inspector = new ModelInspector();
   }
 
@@ -46,7 +48,8 @@ export default class ModelDecorator {
     var collection = this._collectionFactory(
       model,
       path.name,
-      path.pathType.valueType.collectionType.valueType
+      path.pathType.valueType.collectionType.valueType,
+      this._collectionAdapter
     );
     Path( path.name ).override( model, {
       get: () => {
@@ -64,7 +67,8 @@ export default class ModelDecorator {
       initialize: false,
       persist: true,
       get: () => {
-        return path.pathType.cast( this._inspector.viewForModel( model ).get( path.name ), {
+        var view = this._inspector.viewForModel( model );
+        return path.pathType.cast( view.get( path.name ), {
           parent: model
         });
       },
