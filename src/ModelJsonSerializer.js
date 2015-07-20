@@ -6,11 +6,9 @@ export default class ModelJsonSerializer {
    */
   serialize( paths, value ) {
     return paths.reduce( ( object, path ) => {
-      var val = path.get( value );
+      var val = path.pathType.cast( path.get( value ) );
       if ( val && typeof val.toJSON === 'function' ) {
         val = val.toJSON();
-      } else {
-        val = path.pathType.cast( val );
       }
       path.set( object, val );
       return object;

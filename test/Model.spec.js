@@ -58,5 +58,33 @@ describe( 'Model', function() {
         }
       });
     });
+
+    it( 'should call .toJSON() on child values after casting', function() {
+      var custom = function( value ) {
+        return {
+          baz: 2,
+
+          toJSON() {
+            return {
+              qux: 3
+            }
+          }
+        }
+      };
+      class Foo extends orm.Model {
+        static attrs = {
+          bar: custom
+        }
+      }
+
+      var schema = schemaFromClass( Foo );
+      var foo = schema.cast();
+
+      expect( foo.toJSON() ).to.eql({
+        bar: {
+          qux: 3
+        }
+      });
+    });
   });
 });
