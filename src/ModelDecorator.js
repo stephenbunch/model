@@ -1,19 +1,14 @@
-import CollectionSchema from './CollectionSchema';
 import ModelInspector from './ModelInspector';
-import ModelSchema from './ModelSchema';
 import Path from '@stephenbunch/path';
 
 export default class ModelDecorator {
   /**
    * @param {Array.<SchemaPath>} paths
-   * @param {Function} collectionFactory
-   * @param {CollectionAdapter} collectionAdapter
    */
-  constructor( paths, collectionFactory, collectionAdapter ) {
-    this.paths = paths;
-    this._collectionFactory = collectionFactory;
-    this._collectionAdapter = collectionAdapter;
+  constructor( paths ) {
     this._inspector = new ModelInspector();
+    this.paths = paths;
+    this.pathDecorators = [];
   }
 
   /**
@@ -21,48 +16,21 @@ export default class ModelDecorator {
    */
   decorate( model ) {
     this.paths.forEach( path => {
-      if ( this._isCollectionPath( path ) ) {
-        this._addCollectionPath( model, path );
-      } else {
-        this._addAttributePath( model, path );
+      for ( let decorator of this.pathDecorators ) {
+        if ( decorator.shouldDecoratePath( path ) ) {
+          decorator.decoratePath( path, model );
+          return;
+        }
       }
+      this._addAttributePath( path, model );
     });
   }
 
   /**
    * @param {SchemaPath} path
-   * @returns {Boolean}
-   */
-  _isCollectionPath( path ) {
-    return (
-      path.pathType.valueType instanceof CollectionSchema &&
-      path.pathType.valueType.collectionType.valueType instanceof ModelSchema
-    );
-  }
-
-  /**
    * @param {Model} model
-   * @param {SchemaPath} path
    */
-  _addCollectionPath( model, path ) {
-    var collection = this._collectionFactory(
-      model,
-      path.name,
-      path.pathType.valueType.collectionType.valueType,
-      this._collectionAdapter
-    );
-    Path( path.name ).override( model, {
-      get: () => {
-        return collection;
-      }
-    });
-  }
-
-  /**
-   * @param {Model} model
-   * @param {SchemaPath} path
-   */
-  _addAttributePath( model, path ) {
+  _addAttributePath( path, model ) {
     Path( path.name ).override( model, {
       initialize: false,
       persist: true,

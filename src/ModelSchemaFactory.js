@@ -1,3 +1,4 @@
+import CollectionPathDecorator from './CollectionPathDecorator';
 import DefaultCollectionAdapter from './DefaultCollectionAdapter';
 import Model from './Model';
 import ModelCollection from './ModelCollection';
@@ -25,6 +26,16 @@ export default class ModelSchemaFactory {
       }
     };
     this.collectionAdapter = new DefaultCollectionAdapter();
+    this.modelDecoratorFactory = paths => {
+      var decorator = new ModelDecorator( paths );
+      decorator.pathDecorators.push(
+        new CollectionPathDecorator(
+          this.modelCollectionFactory,
+          this.collectionAdapter
+        )
+      );
+      return decorator;
+    };
   }
 
   /**
@@ -33,11 +44,7 @@ export default class ModelSchemaFactory {
    */
   schemaFromClass( ModelClass ) {
     var schema = this.schemaParser.schemaFromNode( ModelClass.attrs || {} );
-    var decorator = new ModelDecorator(
-      schema.paths,
-      this.modelCollectionFactory,
-      this.collectionAdapter
-    );
+    var decorator = this.modelDecoratorFactory( schema.paths );
     return new ModelSchema( ModelClass, decorator, this.viewFactory );
   }
 };
