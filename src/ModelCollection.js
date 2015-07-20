@@ -1,5 +1,6 @@
-import { findIndex } from './util';
+import ArrayCollectionAdapter from './ArrayCollectionAdapter';
 import ModelInspector from './ModelInspector';
+import { findIndex } from './util';
 
 const _parent = Symbol( '_parent' );
 const _key = Symbol( '_key' );
@@ -8,21 +9,19 @@ const _inspector = Symbol( '_inspector' );
 const _view = Symbol( '_view' );
 const _cast = Symbol( '_cast' );
 const _update = Symbol( '_update' );
-const _adapter = Symbol( '_adapter' );
 
 export default class ModelCollection {
   /**
    * @param {Model} parent
    * @param {String} key
    * @param {ModelSchema} schema
-   * @param {CollectionAdapter} adapter
    */
-  constructor( parent, key, schema, adapter ) {
+  constructor( parent, key, schema ) {
     this[ _parent ] = parent;
     this[ _key ] = key;
     this[ _schema ] = schema;
-    this[ _adapter ] = adapter;
     this[ _inspector ] = new ModelInspector();
+    this._adapter = new ArrayCollectionAdapter();
   }
 
   get [ _view ]() {
@@ -30,11 +29,11 @@ export default class ModelCollection {
   }
 
   get size() {
-    return this[ _adapter ].getSize( this[ _view ], this[ _key ] );
+    return this._adapter.getSize( this[ _view ], this[ _key ] );
   }
 
   [ Symbol.iterator ]() {
-    var iterator = this[ _adapter ].iterate( this[ _view ], this[ _key ] );
+    var iterator = this._adapter.iterate( this[ _view ], this[ _key ] );
     return {
       next: () => {
         var result = iterator.next();
@@ -47,7 +46,7 @@ export default class ModelCollection {
   }
 
   get( index ) {
-    var item = this[ _adapter ]
+    var item = this._adapter
       .valueAtIndex( this[ _view ], this[ _key ], index );
     return item && this[ _cast ]( item );
   }
@@ -95,7 +94,7 @@ export default class ModelCollection {
 
   toArray() {
     var array = [];
-    var iterator = this[ _adapter ].iterate( this[ _view ], this[ _key ] );
+    var iterator = this._adapter.iterate( this[ _view ], this[ _key ] );
     while ( true ) {
       let item = iterator.next();
       if ( item.done ) {
@@ -121,6 +120,6 @@ export default class ModelCollection {
     var items = this.toArray();
     items = map( items ) || items;
     items = items.map( x => this[ _inspector ].viewForModel( x ) );
-    this[ _adapter ].set( this[ _view ], this[ _key ], items );
+    this._adapter.set( this[ _view ], this[ _key ], items );
   }
 };

@@ -2,7 +2,7 @@ import CollectionSchema from './CollectionSchema';
 import ModelSchema from './ModelSchema';
 import Path from '@stephenbunch/path';
 
-export default class CollectionPathDecorator {
+export default class ModelCollectionDecoration {
   /**
    * @param {Function} collectionFactory
    * @param {CollectionAdapter} collectionAdapter

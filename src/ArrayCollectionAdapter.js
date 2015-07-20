@@ -1,7 +1,7 @@
 /**
  * @implements {CollectionAdapter}
  */
-export default class DefaultCollectionAdapter {
+export default class ArrayCollectionAdapter {
   /**
    * @param {AbstractView} view
    * @param {String} path

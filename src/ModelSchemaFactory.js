@@ -1,7 +1,6 @@
-import CollectionPathDecorator from './CollectionPathDecorator';
-import DefaultCollectionAdapter from './DefaultCollectionAdapter';
 import Model from './Model';
 import ModelCollection from './ModelCollection';
+import ModelCollectionDecoration from './ModelCollectionDecoration';
 import ModelDecorator from './ModelDecorator';
 import ModelSchema from './ModelSchema';
 import ObjectView from './ObjectView';
@@ -17,7 +16,6 @@ export default class ModelSchemaFactory {
         return this.schemaFromClass( node );
       }
     });
-    this.modelCollectionFactory = factoryFromClass( ModelCollection );
     this.viewFactory = value => {
       if ( value instanceof View ) {
         return value;
@@ -25,14 +23,10 @@ export default class ModelSchemaFactory {
         return new View( new ObjectView( value || {} ) );
       }
     };
-    this.collectionAdapter = new DefaultCollectionAdapter();
-    this.modelDecoratorFactory = paths => {
+    this.decoratorFactory = paths => {
       var decorator = new ModelDecorator( paths );
-      decorator.pathDecorators.push(
-        new CollectionPathDecorator(
-          this.modelCollectionFactory,
-          this.collectionAdapter
-        )
+      decorator.decorations.push(
+        new ModelCollectionDecoration( factoryFromClass( ModelCollection ) )
       );
       return decorator;
     };
@@ -44,7 +38,7 @@ export default class ModelSchemaFactory {
    */
   schemaFromClass( ModelClass ) {
     var schema = this.schemaParser.schemaFromNode( ModelClass.attrs || {} );
-    var decorator = this.modelDecoratorFactory( schema.paths );
+    var decorator = this.decoratorFactory( schema.paths );
     return new ModelSchema( ModelClass, decorator, this.viewFactory );
   }
 };
