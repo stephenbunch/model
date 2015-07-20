@@ -5,11 +5,9 @@ import Path from '@stephenbunch/path';
 export default class ModelCollectionDecoration {
   /**
    * @param {Function} collectionFactory
-   * @param {CollectionAdapter} collectionAdapter
    */
-  constructor( collectionFactory, collectionAdapter ) {
+  constructor( collectionFactory ) {
     this._collectionFactory = collectionFactory;
-    this._collectionAdapter = collectionAdapter;
   }
 
   /**
@@ -31,8 +29,7 @@ export default class ModelCollectionDecoration {
     var collection = this._collectionFactory(
       model,
       path.name,
-      path.pathType.valueType.collectionType.valueType,
-      this._collectionAdapter
+      path.pathType.valueType.collectionType.valueType
     );
     Path( path.name ).override( model, {
       get: () => {
