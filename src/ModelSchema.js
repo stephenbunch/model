@@ -13,6 +13,10 @@ export default class ModelSchema {
     this._viewFactory = viewFactory;
   }
 
+  get paths() {
+    return this._decorator.paths;
+  }
+
   /**
    * Casts an existing value to a new model instance.
    * @param {*} [value]

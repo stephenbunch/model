@@ -10,7 +10,7 @@ export default class ModelDecorator {
    * @param {CollectionAdapter} collectionAdapter
    */
   constructor( paths, collectionFactory, collectionAdapter ) {
-    this._paths = paths;
+    this.paths = paths;
     this._collectionFactory = collectionFactory;
     this._collectionAdapter = collectionAdapter;
     this._inspector = new ModelInspector();
@@ -20,7 +20,7 @@ export default class ModelDecorator {
    * @param {Model} model
    */
   decorate( model ) {
-    this._paths.forEach( path => {
+    this.paths.forEach( path => {
       if ( this._isCollectionPath( path ) ) {
         this._addCollectionPath( model, path );
       } else {

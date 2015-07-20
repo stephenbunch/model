@@ -1,6 +1,8 @@
 import ModelEditor from './ModelEditor';
+import ModelJsonSerializer from './ModelJsonSerializer';
 
 const editor = new ModelEditor();
+const serializer = new ModelJsonSerializer();
 
 export default class Model {
   static attrs = {}
@@ -13,6 +15,8 @@ export default class Model {
    * @returns {Object}
    */
   toJSON() {
-    return editor.inspector.viewForModel( this ).toJSON();
+    var data = editor.inspector.viewForModel( this ).toJSON();
+    var schema = editor.inspector.schemaForModel( this );
+    return serializer.serialize( schema.paths, data );
   }
 };
