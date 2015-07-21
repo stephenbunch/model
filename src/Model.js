@@ -15,8 +15,7 @@ export default class Model {
    * @returns {Object}
    */
   toJSON() {
-    var data = editor.inspector.viewForModel( this ).toJSON();
     var schema = editor.inspector.schemaForModel( this );
-    return serializer.serialize( schema.paths, data );
+    return serializer.serialize( schema.paths, this );
   }
 };
