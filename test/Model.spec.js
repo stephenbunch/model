@@ -86,5 +86,24 @@ describe( 'Model', function() {
         }
       });
     });
+
+    it( 'should read all enumerable properties', function() {
+      var enumerable = ( proto, propName, descriptor ) => {
+        descriptor.enumerable = true;
+      };
+
+      class Foo extends orm.Model {
+        @enumerable get bar() {
+          return 2;
+        }
+      }
+
+      var schema = schemaFromClass( Foo );
+      var foo = schema.cast();
+
+      expect( foo.toJSON() ).to.eql({
+        bar: 2
+      });
+    });
   });
 });

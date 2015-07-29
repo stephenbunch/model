@@ -5,7 +5,7 @@ export default class ModelJsonSerializer {
    * @returns {Object}
    */
   serialize( paths, model ) {
-    return paths.reduce( ( object, path ) => {
+    var obj = paths.reduce( ( object, path ) => {
       var val = path.get( model );
       if ( val && typeof val.toJSON === 'function' ) {
         val = val.toJSON();
@@ -13,5 +13,15 @@ export default class ModelJsonSerializer {
       path.set( object, val );
       return object;
     }, {} );
+    for ( let prop in model ) {
+      if ( !( prop in obj ) ) {
+        let val = model[ prop ];
+        if ( val && typeof val.toJSON === 'function' ) {
+          val = val.toJSON();
+        }
+        obj[ prop ] = val;
+      }
+    }
+    return obj;
   }
 };
