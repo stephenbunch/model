@@ -1,6 +1,6 @@
 import Model from './Model';
 import ModelCollection from './ModelCollection';
-import ModelCollectionDecoration from './ModelCollectionDecoration';
+import ModelCollectionAttributeDecorator from './ModelCollectionAttributeDecorator';
 import ModelDecorator from './ModelDecorator';
 import ModelSchema from './ModelSchema';
 import ObjectView from './ObjectView';
@@ -25,8 +25,10 @@ export default class ModelSchemaFactory {
     };
     this.decoratorFactory = paths => {
       var decorator = new ModelDecorator( paths );
-      decorator.decorations.push(
-        new ModelCollectionDecoration( factoryFromClass( ModelCollection ) )
+      decorator.delegates.push(
+        new ModelCollectionAttributeDecorator(
+          factoryFromClass( ModelCollection )
+        )
       );
       return decorator;
     };

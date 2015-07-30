@@ -8,7 +8,7 @@ export default class ModelDecorator {
   constructor( paths ) {
     this._inspector = new ModelInspector();
     this.paths = paths;
-    this.decorations = [];
+    this.delegates = [];
   }
 
   /**
@@ -16,9 +16,9 @@ export default class ModelDecorator {
    */
   decorate( model ) {
     this.paths.forEach( path => {
-      for ( let decoration of this.decorations ) {
-        if ( decoration.shouldDecoratePath( path ) ) {
-          decoration.decoratePath( path, model );
+      for ( let delegate of this.delegates ) {
+        if ( delegate.shouldDecoratePath( path ) ) {
+          delegate.decoratePath( path, model );
           return;
         }
       }
