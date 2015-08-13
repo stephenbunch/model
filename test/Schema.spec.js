@@ -44,7 +44,6 @@ describe( 'Schema', function() {
           }]
         ])
       });
-      expect( schema.paths[0].pathType.valueType.attrs.nullable ).to.equal( true );
       var obj = schema.cast();
       expect( obj ).to.eql({
         foo: null

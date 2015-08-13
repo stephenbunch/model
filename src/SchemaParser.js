@@ -137,13 +137,9 @@ export default class SchemaParser {
 
   _valueFromNode( node ) {
     if ( this._isGenericType( node ) ) {
-      let schemas = node.of.map( node => this.schemaFromNode( node ) );
-      return this.valueFactory({
-        attrs: node.attrs || {},
-        cast( value, options ) {
-          return node.cast( value, options, schemas );
-        }
-      });
+      return this.valueFactory(
+        node.get( node.of.map( node => this.schemaFromNode( node ) ) )
+      );
     } else {
       return this.valueFactory( this._typeFromNode( node ) );
     }

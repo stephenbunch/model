@@ -9,14 +9,15 @@ export default {
     return {
       [ Symbol.generic ]: true,
       of: [ type ],
-      attrs: {
-        nullable: true,
-      },
-      cast( value, options, schemas ) {
-        if ( value === null || value === undefined ) {
-          return null;
-        }
-        return schemas[0].cast( value, options );
+      get( schemas ) {
+        return {
+          cast( value, options ) {
+            if ( value === null || value === undefined ) {
+              return null;
+            }
+            return schemas[0].cast( value, options );
+          }
+        };
       }
     };
   },
