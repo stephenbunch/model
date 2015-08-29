@@ -1,9 +1,13 @@
-import orm from '../src';
+import {
+  SchemaParser,
+  CollectionSchema,
+  schemas
+} from '../src';
 
 describe( 'SchemaParser', function() {
   describe( '.schemaFromNode( node )', function() {
     it( 'should parse the object into an array of paths', function() {
-      var parser = new orm.SchemaParser();
+      var parser = new SchemaParser();
       var schema = parser.schemaFromNode({
         foo: Number,
         bar: String
@@ -16,14 +20,14 @@ describe( 'SchemaParser', function() {
     });
 
     it( 'should parse empty arrays as collections of objects', function() {
-      var parser = new orm.SchemaParser();
+      var parser = new SchemaParser();
       var schema = parser.schemaFromNode( [] );
-      expect( schema.valueType ).to.be.instanceof( orm.CollectionSchema );
-      expect( schema.valueType.collectionType.valueType.cast ).to.equal( orm.Type.any );
+      expect( schema.valueType ).to.be.instanceof( CollectionSchema );
+      expect( schema.valueType.collectionType.valueType ).to.equal( schemas.Any );
     });
 
     it( 'should parse nested objects', function() {
-      var parser = new orm.SchemaParser();
+      var parser = new SchemaParser();
       var schema = parser.schemaFromNode({
         foo: {
           bar: Number,
@@ -38,27 +42,27 @@ describe( 'SchemaParser', function() {
     });
 
     it( 'should parse nested arrays as collections of collections', function() {
-      var parser = new orm.SchemaParser();
+      var parser = new SchemaParser();
       var schema = parser.schemaFromNode({
         foo: [ [ Number ] ]
       });
       expect( schema.paths.length ).to.equal( 1 );
       var foo = schema.paths[0];
       expect( foo.name ).to.equal( 'foo' );
-      expect( foo.pathType.valueType ).to.be.instanceof( orm.CollectionSchema );
-      expect( foo.pathType.valueType.collectionType.valueType ).to.be.instanceof( orm.CollectionSchema );
+      expect( foo.pathType.valueType ).to.be.instanceof( CollectionSchema );
+      expect( foo.pathType.valueType.collectionType.valueType ).to.be.instanceof( CollectionSchema );
       expect( foo.pathType.valueType.collectionType.valueType.collectionType.valueType.cast ).to.be.a( 'function' );
     });
 
     it( 'should parse null or undefined as an object', function() {
-      var parser = new orm.SchemaParser();
+      var parser = new SchemaParser();
       var schema = parser.schemaFromNode();
       expect( schema.paths.length ).to.equal( 0 );
       expect( schema.cast() ).to.eql( {} );
     });
 
     it( 'should use type resolvers', function() {
-      var parser = new orm.SchemaParser();
+      var parser = new SchemaParser();
       parser.typeResolvers.set( String, Number );
       var schema = parser.schemaFromNode( String );
       expect( schema.cast( '123' ) ).to.equal( 123 );
@@ -75,7 +79,7 @@ describe( 'SchemaParser', function() {
 
   describe( '.clone()', function() {
     it( 'should make a copy of the parser', function() {
-      var parser1 = new orm.SchemaParser();
+      var parser1 = new SchemaParser();
       parser1.typeResolvers.set( String, Number );
       var parser2 = parser1.clone();
       parser2.typeResolvers.set( String, Boolean );

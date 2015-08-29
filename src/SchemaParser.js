@@ -2,8 +2,8 @@ import ObjectSchema from './ObjectSchema';
 import CollectionSchema from './CollectionSchema';
 import ValueSchema from './ValueSchema';
 import SchemaPath from './SchemaPath';
-import { typeOf, factoryFromClass } from './util';
-import Type from './Type';
+import { factoryFromClass } from './util';
+import schemas from './schemas';
 import Symbol from './Symbol';
 
 export default class SchemaParser {
@@ -14,9 +14,9 @@ export default class SchemaParser {
     this.pathFactory = factoryFromClass( SchemaPath );
 
     this.typeResolvers = new Map();
-    this.typeResolvers.set( null, Type.any );
-    this.typeResolvers.set( String, Type.string );
-    this.typeResolvers.set( Number, Type.number );
+    this.typeResolvers.set( null, schemas.Any );
+    this.typeResolvers.set( String, schemas.String );
+    this.typeResolvers.set( Number, schemas.Number );
 
     this.nodeResolvers = [];
   }
@@ -149,7 +149,7 @@ export default class SchemaParser {
     if ( Array.isArray( node ) && node.length > 0 ) {
       return this.collectionFactory( this.schemaFromNode( node[0] ) );
     } else {
-      return this.collectionFactory( this.valueFactory( Type.any ) );
+      return this.collectionFactory( this.valueFactory( schemas.Any ) );
     }
   }
 }

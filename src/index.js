@@ -1,41 +1,22 @@
+import schemas from './schemas';
+import util from './util';
+
 import CollectionSchema from './CollectionSchema';
-import Model from './Model';
-import ModelCollection from './ModelCollection';
-import ModelDecorator from './ModelDecorator';
-import ModelEditor from './ModelEditor';
-import ModelSchema from './ModelSchema';
-import ModelSchemaFactory from './ModelSchemaFactory';
-import ModelInspector from './ModelInspector';
 import ObjectSchema from './ObjectSchema';
+import Schema from './Schema';
 import SchemaParser from './SchemaParser';
 import SchemaPath from './SchemaPath';
 import Symbol from './Symbol';
-import Type from './Type';
-import {
-  factoryFromClass,
-  merge
-} from './util';
 import ValueSchema from './ValueSchema';
-import View from './View';
 
 export default {
+  schemas,
+  util,
   CollectionSchema,
-  Model,
-  ModelCollection,
-  ModelDecorator,
-  ModelEditor,
-  ModelInspector,
-  ModelSchema,
-  ModelSchemaFactory,
   ObjectSchema,
+  Schema,
   SchemaParser,
   SchemaPath,
   Symbol,
-  Type,
-  util: {
-    factoryFromClass,
-    merge
-  },
-  ValueSchema,
-  View
+  ValueSchema
 };

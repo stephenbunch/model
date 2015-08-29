@@ -4,7 +4,7 @@ export default class SchemaPath {
   constructor( path, type ) {
     this.name = path;
     this.pathType = type;
-    this.accessor = Path( path );
+    this.accessor = new Path( path );
   }
 
   get( object ) {

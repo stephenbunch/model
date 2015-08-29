@@ -1,6 +1,3 @@
-/**
- * @implements {Schema}
- */
 export default class ObjectSchema {
   /**
    * @param {Array.<SchemaPath>} paths

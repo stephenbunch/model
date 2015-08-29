@@ -1,10 +1,10 @@
-import orm from '../src';
+import { Schema, schemas } from '../src';
+const { nullableOf } = schemas;
 
 describe( 'Schema', function() {
   describe( '.cast( value )', function() {
     it( 'should use the schema definition to cast the value', function() {
-      var parser = new orm.SchemaParser();
-      var schema = parser.schemaFromNode({
+      var schema = new Schema({
         foo: {
           bar: Number
         }
@@ -18,8 +18,7 @@ describe( 'Schema', function() {
     });
 
     it( 'should create empty arrays', function() {
-      var parser = new orm.SchemaParser();
-      var schema = parser.schemaFromNode({
+      var schema = new Schema({
         foo: [ [ Number ] ]
       });
       var obj = schema.cast();
@@ -36,9 +35,8 @@ describe( 'Schema', function() {
     });
 
     it( 'should leave nulls as null when type is nullable', function() {
-      var parser = new orm.SchemaParser();
-      var schema = parser.schemaFromNode({
-        foo: orm.Type.nullable([
+      var schema = new Schema({
+        foo: nullableOf([
           [{
             bar: Number
           }]
@@ -65,8 +63,7 @@ describe( 'Schema', function() {
     });
 
     it( 'should convert null to the default value', function() {
-      var parser = new orm.SchemaParser();
-      var schema = parser.schemaFromNode({
+      var schema = new Schema({
         foo: [ [ Number ] ]
       });
       var obj = schema.cast({
@@ -78,11 +75,10 @@ describe( 'Schema', function() {
     });
 
     it( 'should recursively call .cast() on nested schemas', function() {
-      var parser = new orm.SchemaParser();
-      var schemaA = parser.schemaFromNode({
+      var schemaA = new Schema({
         foo: Number
       });
-      var schemaB = parser.schemaFromNode({
+      var schemaB = new Schema({
         bar: {
           baz: schemaA
         }
@@ -98,8 +94,7 @@ describe( 'Schema', function() {
     });
 
     it( 'should not cast Type.any', function() {
-      var parser = new orm.SchemaParser();
-      var Foo = parser.schemaFromNode({
+      var Foo = new Schema({
         bar: null
       });
       var foo = Foo.cast( {} );
@@ -113,8 +108,7 @@ describe( 'Schema', function() {
     });
 
     it( 'should cast falsey types to empty strings', function() {
-      var parser = new orm.SchemaParser();
-      var Foo = parser.schemaFromNode({
+      var Foo = new Schema({
         bar: String,
         baz: String,
         qux: String
@@ -126,8 +120,7 @@ describe( 'Schema', function() {
     });
 
     it( 'should cast to 0 instead of NaN', function() {
-      var parser = new orm.SchemaParser();
-      var Foo = parser.schemaFromNode({
+      var Foo = new Schema({
         bar: Number
       });
       var foo = Foo.cast({ bar: 'hello' });

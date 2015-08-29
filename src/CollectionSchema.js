@@ -1,6 +1,3 @@
-/**
- * @implements {Schema}
- */
 export default class CollectionSchema {
   /**
    * @param {Schema} type

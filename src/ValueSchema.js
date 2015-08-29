@@ -1,6 +1,3 @@
-/**
- * @implements {Schema}
- */
 export default class ValueSchema {
   /**
    * @param {Schema|Function} type
