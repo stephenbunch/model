@@ -1,5 +1,4 @@
 import ObjectSchema from './ObjectSchema';
-import CollectionSchema from './CollectionSchema';
 import ValueSchema from './ValueSchema';
 import SchemaPath from './SchemaPath';
 import { factoryFromClass } from './util';
@@ -9,7 +8,6 @@ import Symbol from './Symbol';
 export default class SchemaParser {
   constructor() {
     this.objectFactory = factoryFromClass( ObjectSchema );
-    this.collectionFactory = factoryFromClass( CollectionSchema );
     this.valueFactory = factoryFromClass( ValueSchema );
     this.pathFactory = factoryFromClass( SchemaPath );
 
@@ -17,8 +15,25 @@ export default class SchemaParser {
     this.typeResolvers.set( null, schemas.Any );
     this.typeResolvers.set( String, schemas.String );
     this.typeResolvers.set( Number, schemas.Number );
+    this.typeResolvers.set( Array, schemas.arrayOf( schemas.Any ) );
 
     this.nodeResolvers = [];
+    this.nodeResolvers.push( node => {
+      if ( Array.isArray( node ) ) {
+        if ( node.length > 0 ) {
+          return schemas.arrayOf( node[0] );
+        } else {
+          return schemas.arrayOf( schemas.Any );
+        }
+      }
+    });
+    this.nodeResolvers.push( node => {
+      if ( typeof node === 'function' ) {
+        return {
+          cast: node
+        };
+      }
+    });
   }
 
   /**
@@ -37,7 +52,6 @@ export default class SchemaParser {
   clone() {
     var parser = new SchemaParser();
     parser.objectFactory = this.objectFactory;
-    parser.collectionFactory = this.collectionFactory;
     parser.valueFactory = this.valueFactory;
     parser.pathFactory = this.pathFactory;
     for ( let [ key, value ] of this.typeResolvers ) {
@@ -96,27 +110,7 @@ export default class SchemaParser {
    * @returns {Boolean}
    */
   _isTypeNode( node ) {
-    return (
-      typeof node === 'function' ||
-      Array.isArray( node ) ||
-      node && typeof node.cast === 'function'
-    );
-  }
-
-  _typeFromNode( node ) {
-    if ( this._isCollectionType( node ) ) {
-      return this._collectionFromNode( node );
-    } else {
-      return node;
-    }
-  }
-
-  /**
-   * @param {*} value
-   * @returns {Boolean}
-   */
-  _isCollectionType( value ) {
-    return value === Array || Array.isArray( value );
+    return node && typeof node.cast === 'function';
   }
 
   /**
@@ -141,15 +135,7 @@ export default class SchemaParser {
         node.get( node.of.map( node => this.schemaFromNode( node ) ) )
       );
     } else {
-      return this.valueFactory( this._typeFromNode( node ) );
-    }
-  }
-
-  _collectionFromNode( node ) {
-    if ( Array.isArray( node ) && node.length > 0 ) {
-      return this.collectionFactory( this.schemaFromNode( node[0] ) );
-    } else {
-      return this.collectionFactory( this.valueFactory( schemas.Any ) );
+      return this.valueFactory( node );
     }
   }
 }

@@ -93,7 +93,7 @@ describe( 'Schema', function() {
       });
     });
 
-    it( 'should not cast Type.any', function() {
+    it( 'should not cast schemas.Any', function() {
       var Foo = new Schema({
         bar: null
       });

@@ -1,7 +1,6 @@
 import schemas from './schemas';
 import util from './util';
 
-import CollectionSchema from './CollectionSchema';
 import ObjectSchema from './ObjectSchema';
 import Schema from './Schema';
 import SchemaParser from './SchemaParser';
@@ -12,7 +11,6 @@ import ValueSchema from './ValueSchema';
 export default {
   schemas,
   util,
-  CollectionSchema,
   ObjectSchema,
   Schema,
   SchemaParser,

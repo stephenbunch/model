@@ -1,6 +1,5 @@
 import {
   SchemaParser,
-  CollectionSchema,
   schemas
 } from '../src';
 
@@ -19,13 +18,6 @@ describe( 'SchemaParser', function() {
       expect( schema.paths[1].pathType.valueType.cast ).to.be.a( 'function' );
     });
 
-    it( 'should parse empty arrays as collections of objects', function() {
-      var parser = new SchemaParser();
-      var schema = parser.schemaFromNode( [] );
-      expect( schema.valueType ).to.be.instanceof( CollectionSchema );
-      expect( schema.valueType.collectionType.valueType ).to.equal( schemas.Any );
-    });
-
     it( 'should parse nested objects', function() {
       var parser = new SchemaParser();
       var schema = parser.schemaFromNode({
@@ -39,19 +31,6 @@ describe( 'SchemaParser', function() {
       expect( schema.paths[0].pathType.valueType.cast ).to.be.a( 'function' );
       expect( schema.paths[1].name ).to.equal( 'foo.baz' );
       expect( schema.paths[1].pathType.valueType.cast ).to.be.a( 'function' );
-    });
-
-    it( 'should parse nested arrays as collections of collections', function() {
-      var parser = new SchemaParser();
-      var schema = parser.schemaFromNode({
-        foo: [ [ Number ] ]
-      });
-      expect( schema.paths.length ).to.equal( 1 );
-      var foo = schema.paths[0];
-      expect( foo.name ).to.equal( 'foo' );
-      expect( foo.pathType.valueType ).to.be.instanceof( CollectionSchema );
-      expect( foo.pathType.valueType.collectionType.valueType ).to.be.instanceof( CollectionSchema );
-      expect( foo.pathType.valueType.collectionType.valueType.collectionType.valueType.cast ).to.be.a( 'function' );
     });
 
     it( 'should parse null or undefined as an object', function() {
