@@ -3,13 +3,7 @@ export default class ValueSchema {
    * @param {Schema|Function} type
    */
   constructor( type ) {
-    if ( type && typeof type.cast === 'function' ) {
-      this.valueType = type;
-    } else {
-      this.valueType = {
-        cast: type
-      };
-    }
+    this.valueType = type;
   }
 
   cast( value, options ) {
