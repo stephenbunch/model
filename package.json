@@ -1,6 +1,6 @@
 {
   "name": "@stephenbunch/orm",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "A library for building custom ORMs.",
   "main": "lib/index.js",
   "scripts": {
