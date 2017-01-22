@@ -1,6 +1,6 @@
 {
   "name": "@stephenbunch/orm",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "A library for building custom ORMs.",
   "main": "lib/index.js",
   "scripts": {
@@ -18,10 +18,13 @@
   "homepage": "https://github.com/stephenbunch/orm",
   "devDependencies": {
     "@stephenbunch/buildpack": "^0.4.10",
-    "babel-runtime": "^5.8.20",
     "gulp": "^3.9.0"
   },
   "dependencies": {
-    "@stephenbunch/path": "^0.2.0"
+    "@stephenbunch/path": "^0.2.0",
+    "babel-runtime": "^5.8.20"
+  },
+  "engines": {
+    "node": "0.12.7"
   }
 }
